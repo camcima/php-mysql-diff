@@ -6,15 +6,17 @@ use Camcima\MySqlDiff\Model\Column;
 use Camcima\MySqlDiff\Model\Database;
 use Camcima\MySqlDiff\Model\ForeignKey;
 use Camcima\MySqlDiff\Model\Index;
+use Camcima\MySqlDiff\Model\IndexColumn;
 use Camcima\MySqlDiff\Model\Table;
 
 class Parser
 {
     const REGEXP_TABLES = '/(?<creationScript>CREATE\s+TABLE\s+`(?<tableName>\S+)`\s+\((?<tableDefinition>[^;]+)\)(?:\s+ENGINE=(?<engine>\S+))?\s*(?:AUTO_INCREMENT=(?<autoIncrement>\d+))?\s*(?:DEFAULT CHARSET=(?<defaultCharset>\S+))?\s*;)/s';
-    const REGEXP_COLUMN = '/\s*`(?<columnName>\S+?)`\s+(?<dataType>(?:tiny|small|medium|big)?int\((?<intLength>\d+)\)(?:\s+unsigned)?|float|binary|double|real|decimal\((?<decimalLength>\d+),(?<decimalPrecision>\d+)\)|datetime|date|time|timestamp|year\((?<yearLength>\d)\)|geometry|(?:var|nvar)?char\((?<charLength>\d+)\)|(?:var)?binary\((?<binaryLength>\d+)\)|(?:tiny|medium|long)?text|(?:tiny|medium|long)?blob|enum\(.+\)|set\(.+\))\s*(?:CHARACTER SET\s+(?<characterSet>\S+))?\s*(?:COLLATE\s+(?<collate>\S+))?\s*(?<nullable>NULL|NOT NULL)?\s*(?<autoIncrement>AUTO_INCREMENT)?\s*(?:DEFAULT (?<defaultValue>\S+))?\s*(?:ON UPDATE (?<onUpdateValue>\S+))?\s*(?:,|$)/';
+    const REGEXP_COLUMN = '/\s*`(?<columnName>\S+?)`\s+(?<dataType>(?:tiny|small|medium|big)?int\((?<intLength>\d+)\)(?:\s+unsigned)?|float(?:\s+unsigned)?(?:\((?<floatLength>\d+),(?<floatPrecision>\d+)\))?|binary|real|decimal\((?<decimalLength>\d+),(?<decimalPrecision>\d+)\)|double(?:\((?<doubleLength>\d+),(?<doublePrecision>\d+)\))?|datetime|date|time|timestamp|year\((?<yearLength>\d)\)|geometry|(?:var|nvar)?char\((?<charLength>\d+)\)|(?:var)?binary\((?<binaryLength>\d+)\)|(?:tiny|medium|long)?text|(?:tiny|medium|long)?blob|enum\(.+\)|set\(.+\))\s*(?:CHARACTER SET\s+(?<characterSet>\S+))?\s*(?:COLLATE\s+(?<collate>\S+))?\s*(?<nullable>NULL|NOT NULL)?\s*(?<autoIncrement>AUTO_INCREMENT)?\s*(?:DEFAULT (?<defaultValue>\S+|\'[^\']+\'))?\s*(?:ON UPDATE (?<onUpdateValue>\S+))?\s*(?:COMMENT \'(?<comment>[^\']+)\')?\s*(?:,|$)/';
     const REGEXP_PRIMARY_KEY = '/PRIMARY KEY \((?<primaryKey>.+?)\)/';
     const REGEXP_FOREIGN_KEY = '/CONSTRAINT `(?<name>\S+?)`\s+FOREIGN KEY\s+\(`(?<column>\S+?)`\)\s+REFERENCES\s+`(?<referenceTable>\S+?)`\s*\(`(?<referenceColumn>\S+?)`\)\s*(?<onDelete>ON DELETE .+?)?\s*(?<onUpdate>ON UPDATE .+?)?\s*(?:,|$)/';
-    const REGEXP_INDEX = '/\s*(?<spatial>SPATIAL)?\s*(?<unique>UNIQUE)?\s*(?<fullText>FULLTEXT)?\s*KEY\s+`(?<name>\S+?)`\s+\((?<columns>[^\)]+?)\)\s*(?<options>[^,]+?)?\s*(?:,|$)/';
+    const REGEXP_INDEX = '/\s*(?<spatial>SPATIAL)?\s*(?<unique>UNIQUE)?\s*(?<fullText>FULLTEXT)?\s*KEY\s+`(?<name>\S+?)`\s+\((?<columns>(?:`[^`]+`(?:\(\d+\))?,?)+)\)\s*(?<options>[^,]+?)?\s*(?:,|$)/';
+    const REGEXP_INDEX_COLUMN = '/^(?<columnName>[^\(]+)\s*(?:\((?<firstCharacters>\d+)\))?$/';
 
     /**
      * @param string $sqlScript
@@ -99,14 +101,19 @@ class Parser
             $dataType = $matches['dataType'][$i];
             $intLength = $matches['intLength'][$i];
             $decimalLength = $matches['decimalLength'][$i];
+            $doubleLength = $matches['doubleLength'][$i];
+            $floatLength = $matches['floatLength'][$i];
             $charLength = $matches['charLength'][$i];
             $binaryLength = $matches['binaryLength'][$i];
             $yearLength = $matches['yearLength'][$i];
             $decimalPrecision = $matches['decimalPrecision'][$i];
+            $doublePrecision = $matches['doublePrecision'][$i];
+            $floatPrecision = $matches['floatPrecision'][$i];
             $nullable = $matches['nullable'][$i];
             $autoIncrement = $matches['autoIncrement'][$i];
             $defaultValue = $matches['defaultValue'][$i];
             $onUpdateValue = $matches['onUpdateValue'][$i];
+            $comment = $matches['comment'][$i];
             $characterSet = $matches['characterSet'][$i];
             $collate = $matches['collate'][$i];
 
@@ -114,12 +121,8 @@ class Parser
 
             $column = new Column($columnName);
             $column->setDataType($dataType);
-            $column->setLength($this->getColumnLength($intLength, $decimalLength, $charLength, $binaryLength, $yearLength));
-
-            if (!empty($decimalPrecision)) {
-                $column->setPrecision((int) $decimalPrecision);
-            }
-
+            $column->setLength($this->getColumnLength($intLength, $decimalLength, $doubleLength, $floatLength, $charLength, $binaryLength, $yearLength));
+            $column->setPrecision($this->getColumnPrecision($decimalPrecision, $doublePrecision, $floatPrecision));
             $column->setNullable($nullable != 'NOT NULL');
             $column->setAutoIncrement(!empty($autoIncrement));
 
@@ -129,6 +132,10 @@ class Parser
 
             if (!empty($onUpdateValue)) {
                 $column->setOnUpdateValue($onUpdateValue);
+            }
+
+            if (!empty($comment)) {
+                $column->setComment($comment);
             }
 
             if (!empty($characterSet)) {
@@ -213,9 +220,18 @@ class Parser
 
             $index = new Index($indexName);
 
-            foreach ($indexColumnNames as $indexColumnName) {
-                $indexColumn = $table->getColumnByName(trim($indexColumnName));
-                $index->addColumn($indexColumn);
+            foreach ($indexColumnNames as $indexColumnDefinition) {
+                preg_match(self::REGEXP_INDEX_COLUMN, $indexColumnDefinition, $definitionMatch);
+
+                $indexColumnName = $definitionMatch['columnName'];
+
+                $indexFirstCharacters = null;
+                if (isset($definitionMatch['firstCharacters']) && !empty($definitionMatch['firstCharacters'])) {
+                    $indexFirstCharacters = (int) $definitionMatch['firstCharacters'];
+                }
+
+                $column = $table->getColumnByName(trim($indexColumnName));
+                $index->addIndexColumn(new IndexColumn($column, $indexFirstCharacters));
             }
 
             $index->setUnique(!empty($unique));
@@ -233,24 +249,50 @@ class Parser
     /**
      * @param int $intLength
      * @param int $decimalLength
+     * @param int $doubleLength
+     * @param int $floatLength
      * @param int $charLength
      * @param int $binaryLength
      * @param int $yearLength
      *
      * @return int|null
      */
-    private function getColumnLength($intLength, $decimalLength, $charLength, $binaryLength, $yearLength)
+    private function getColumnLength($intLength, $decimalLength, $doubleLength, $floatLength, $charLength, $binaryLength, $yearLength)
     {
         if (!empty($intLength)) {
             return (int) $intLength;
         } elseif (!empty($decimalLength)) {
             return (int) $decimalLength;
+        } elseif (!empty($doubleLength)) {
+            return (int) $doubleLength;
+        } elseif (!empty($floatLength)) {
+            return (int) $floatLength;
         } elseif (!empty($charLength)) {
             return (int) $charLength;
         } elseif (!empty($binaryLength)) {
             return (int) $binaryLength;
         } elseif (!empty($yearLength)) {
             return (int) $yearLength;
+        } else {
+            return null;
+        }
+    }
+
+    /**
+     * @param int $decimalPrecision
+     * @param int $doublePrecision
+     * @param int $floatPrecision
+     *
+     * @return int|null
+     */
+    private function getColumnPrecision($decimalPrecision, $doublePrecision, $floatPrecision)
+    {
+        if (!empty($decimalPrecision)) {
+            return (int) $decimalPrecision;
+        } elseif (!empty($doublePrecision)) {
+            return (int) $doublePrecision;
+        } elseif (!empty($floatPrecision)) {
+            return (int) $floatPrecision;
         } else {
             return null;
         }

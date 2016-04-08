@@ -65,6 +65,11 @@ class Column
     private $onUpdateValue;
 
     /**
+     * @var string
+     */
+    private $comment;
+
+    /**
      * @var int
      */
     private $order;
@@ -262,6 +267,22 @@ class Column
     }
 
     /**
+     * @return string
+     */
+    public function getComment()
+    {
+        return $this->comment;
+    }
+
+    /**
+     * @param string $comment
+     */
+    public function setComment($comment)
+    {
+        $this->comment = $comment;
+    }
+
+    /**
      * @return int
      */
     public function getOrder()
@@ -294,6 +315,8 @@ class Column
 
         if (!$this->nullable) {
             $columnOptions[] = 'NOT NULL';
+        } elseif ($this->dataType == 'timestamp') {
+            $columnOptions[] = 'NULL';
         }
 
         if ($this->autoIncrement) {
@@ -306,6 +329,10 @@ class Column
 
         if (!empty($this->onUpdateValue)) {
             $columnOptions[] = sprintf('ON UPDATE %s', $this->onUpdateValue);
+        }
+
+        if (!empty($this->comment)) {
+            $columnOptions[] = sprintf('COMMENT \'%s\'', $this->comment);
         }
 
         return trim(sprintf('`%s` %s %s', $this->name, $this->dataType, implode(' ', $columnOptions)));

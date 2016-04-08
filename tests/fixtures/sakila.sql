@@ -612,7 +612,7 @@ CREATE TABLE `test2` (
   `fk` int(10) NOT NULL,
   `val` decimal(10,2) NOT NULL,
   `texto` varchar(60) DEFAULT NULL,
-  `datade` timestamp DEFAULT NULL ON UPDATE CURRENT_TIMESTAMP,
+  `datade` timestamp NULL DEFAULT NULL ON UPDATE CURRENT_TIMESTAMP,
   PRIMARY KEY (`id`),
   KEY `FK__test1` (`fk`),
   CONSTRAINT `FK__test1` FOREIGN KEY (`fk`) REFERENCES `test1` (`id`)

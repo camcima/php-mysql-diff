@@ -6,6 +6,7 @@ use Camcima\MySqlDiff\Model\Column;
 use Camcima\MySqlDiff\Model\Database;
 use Camcima\MySqlDiff\Model\ForeignKey;
 use Camcima\MySqlDiff\Model\Index;
+use Camcima\MySqlDiff\Model\IndexColumn;
 use Camcima\MySqlDiff\Model\Table;
 
 class ParserTest extends AbstractTest
@@ -215,18 +216,18 @@ class ParserTest extends AbstractTest
         $this->assertCount(4, $rentalTable->getIndexes());
 
         $this->assertInstanceOf(Index::class, $rentalTable->getIndexByName('rental_date'));
-        $this->assertCount(3, $rentalTable->getIndexByName('rental_date')->getColumns());
-        $this->assertContains($rentalTable->getColumnByName('rental_date'), $rentalTable->getIndexByName('rental_date')->getColumns());
-        $this->assertContains($rentalTable->getColumnByName('inventory_id'), $rentalTable->getIndexByName('rental_date')->getColumns());
-        $this->assertContains($rentalTable->getColumnByName('customer_id'), $rentalTable->getIndexByName('rental_date')->getColumns());
+        $this->assertCount(3, $rentalTable->getIndexByName('rental_date')->getIndexColumns());
+        $this->assertInstanceOf(IndexColumn::class, $rentalTable->getIndexByName('rental_date')->getIndexColumnByColumnName('rental_date'));
+        $this->assertInstanceOf(IndexColumn::class, $rentalTable->getIndexByName('rental_date')->getIndexColumnByColumnName('inventory_id'));
+        $this->assertInstanceOf(IndexColumn::class, $rentalTable->getIndexByName('rental_date')->getIndexColumnByColumnName('customer_id'));
         $this->assertTrue($rentalTable->getIndexByName('rental_date')->isUnique());
         $this->assertFalse($rentalTable->getIndexByName('rental_date')->isSpatial());
         $this->assertFalse($rentalTable->getIndexByName('rental_date')->isFulltext());
         $this->assertNull($rentalTable->getIndexByName('rental_date')->getOptions());
 
         $this->assertInstanceOf(Index::class, $rentalTable->getIndexByName('idx_fk_staff_id'));
-        $this->assertCount(1, $rentalTable->getIndexByName('idx_fk_staff_id')->getColumns());
-        $this->assertContains($rentalTable->getColumnByName('staff_id'), $rentalTable->getIndexByName('idx_fk_staff_id')->getColumns());
+        $this->assertCount(1, $rentalTable->getIndexByName('idx_fk_staff_id')->getIndexColumns());
+        $this->assertInstanceOf(IndexColumn::class, $rentalTable->getIndexByName('idx_fk_staff_id')->getIndexColumnByColumnName('staff_id'));
         $this->assertFalse($rentalTable->getIndexByName('idx_fk_staff_id')->isUnique());
         $this->assertFalse($rentalTable->getIndexByName('idx_fk_staff_id')->isSpatial());
         $this->assertFalse($rentalTable->getIndexByName('idx_fk_staff_id')->isFulltext());

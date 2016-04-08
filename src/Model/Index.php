@@ -15,9 +15,9 @@ class Index
     private $parentTable;
 
     /**
-     * @var Column[]
+     * @var IndexColumn[]
      */
-    private $columns;
+    private $indexColumns;
 
     /**
      * @var bool
@@ -74,25 +74,41 @@ class Index
     /**
      * @return Column[]
      */
-    public function getColumns()
+    public function getIndexColumns()
     {
-        return $this->columns;
+        return $this->indexColumns;
     }
 
     /**
-     * @param Column[] $columns
+     * @param Column[] $indexColumns
      */
-    public function setColumns($columns)
+    public function setIndexColumns($indexColumns)
     {
-        $this->columns = $columns;
+        $this->indexColumns = $indexColumns;
     }
 
     /**
-     * @param Column $column
+     * @param IndexColumn $indexColumn
      */
-    public function addColumn(Column $column)
+    public function addIndexColumn(IndexColumn $indexColumn)
     {
-        $this->columns[] = $column;
+        $this->indexColumns[] = $indexColumn;
+    }
+
+    /**
+     * @param $columnName
+     *
+     * @return IndexColumn
+     */
+    public function getIndexColumnByColumnName($columnName)
+    {
+        foreach ($this->indexColumns as $indexColumn) {
+            if ($indexColumn->getColumn()->getName() == $columnName) {
+                return $indexColumn;
+            }
+        }
+
+        throw new \RuntimeException(sprintf('Index column "%s" not found!', $columnName));
     }
 
     /**
@@ -178,8 +194,14 @@ class Index
         }
 
         $indexColumns = [];
-        foreach ($this->columns as $column) {
-            $indexColumns[] = sprintf('`%s`', $column->getName());
+        foreach ($this->indexColumns as $indexColumn) {
+
+            $firstCharacters = '';
+            if ($indexColumn->getIndexFirstCharacters()) {
+                $firstCharacters = sprintf('(%s)', $indexColumn->getIndexFirstCharacters());
+            }
+
+            $indexColumns[] = sprintf('`%s`%s', $indexColumn->getColumn()->getName(), $firstCharacters);
         }
 
         $indexOptions = '';
