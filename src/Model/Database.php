@@ -39,4 +39,13 @@ class Database
         return $this->tables[$tableName];
     }
 
+    /**
+     * @param string $tableName
+     *
+     * @return bool
+     */
+    public function hasTable($tableName)
+    {
+        return isset($this->tables[$tableName]);
+    }
 }
