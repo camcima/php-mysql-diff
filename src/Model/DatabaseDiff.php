@@ -66,4 +66,12 @@ class DatabaseDiff
     {
         $this->changedTables[] = $changedTable;
     }
+
+    /**
+     * @return bool
+     */
+    public function isEmptyDifferences()
+    {
+        return empty($this->newTables) && empty($this->deletedTables) && empty($this->changedTables);
+    }
 }

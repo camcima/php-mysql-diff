@@ -3,9 +3,11 @@
 
 require __DIR__ . '/../vendor/autoload.php';
 
+use Camcima\MySqlDiff\Command\DiffCommand;
 use Camcima\MySqlDiff\Command\MigrateCommand;
 use Symfony\Component\Console\Application;
 
 $application = new Application('PHP MySQL Diff', '1.0.0');
 $application->add(new MigrateCommand());
+$application->add(new DiffCommand());
 $application->run();
