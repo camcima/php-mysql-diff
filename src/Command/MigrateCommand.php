@@ -4,18 +4,17 @@ namespace Camcima\MySqlDiff\Command;
 
 use Camcima\MySqlDiff\Differ;
 use Camcima\MySqlDiff\Parser;
-use Symfony\Component\Console\Command\Command;
 use Symfony\Component\Console\Input\InputArgument;
 use Symfony\Component\Console\Input\InputInterface;
 use Symfony\Component\Console\Input\InputOption;
 use Symfony\Component\Console\Output\OutputInterface;
 
-class MigrateCommand extends Command
+class MigrateCommand extends AbstractCommand
 {
     protected function configure()
     {
         $this
-            ->setName('diff:migrate')
+            ->setName('migrate')
             ->setDescription('Generate migration script')
             ->addArgument(
                 'from',
@@ -42,63 +41,63 @@ class MigrateCommand extends Command
      */
     protected function execute(InputInterface $input, OutputInterface $output)
     {
-        $output->writeln('');
+        $this->output = $output;
+        $this->verbose = !empty($input->getOption('output'));
 
-        $verbose = !empty($input->getOption('output'));
-
-        if ($verbose) {
-            $output->writeln('<info>PHP MySQL Diff</info> <comment>1.0.0</comment>');
-            $output->writeln('----------------------------------------');
-            $output->writeln('');
-        }
+        $this->outputLine('', true);
+        $this->outputLine('<info>PHP MySQL Diff</info> <comment>1.0.0</comment>');
+        $this->outputLine('----------------------------------------');
+        $this->outputLine();
 
         $from = $input->getArgument('from');
         $to = $input->getArgument('to');
 
         if (!file_exists($from)) {
-            $output->writeln('<error>' . sprintf('File not found: %s', $from) . '</error>');
+            $this->outputLine('<error>' . sprintf('File not found: %s', $from) . '</error>');
             exit;
         }
 
         if (!file_exists($to)) {
-            $output->writeln('<error>' . sprintf('File not found: %s', $to) . '</error>');
+            $this->outputLine('<error>' . sprintf('File not found: %s', $to) . '</error>');
             exit;
         }
 
         $parser = new Parser();
 
-        if ($verbose) {
-            $output->write('• Parsing initial database ......');
-        }
+
+        $this->outputString('• Parsing initial database ......');
         $fromDatabase = $parser->parseDatabase(file_get_contents($from));
-        if ($verbose) {
-            $output->writeln(' <info>✓</info>');
-            $output->write('• Parsing target database .......');
-        }
+        $this->outputLine(' <info>✓</info>');
+
+        $this->outputString('• Parsing target database .......');
         $toDatabase = $parser->parseDatabase(file_get_contents($to));
-        if ($verbose) {
-            $output->writeln(' <info>✓</info>');
-            $output->write('• Comparing databases ...........');
-        }
+        $this->outputLine(' <info>✓</info>');
+
+        $this->outputString('• Comparing databases ...........');
         $differ = new Differ();
         $databaseDiff = $differ->diffDatabases($fromDatabase, $toDatabase);
-        if ($verbose) {
-            $output->writeln(' <info>✓</info>');
-            $output->write('• Generating migration script ...');
+        $this->outputLine(' <info>✓</info>');
+
+        if ($databaseDiff->isEmptyDifferences()) {
+            $this->outputLine();
+            $this->outputLine('<comment>The databases have the same schema!</comment>');
+            exit;
         }
 
+        $this->outputString('• Generating migration script ...');
         $migrationScript = $differ->generateMigrationScript($databaseDiff);
-        if ($verbose) {
-            $output->writeln(' <info>✓</info>');
-            $output->write('• Writing output file ...........');
+        $this->outputLine(' <info>✓</info>');
 
+        if ($this->verbose) {
+            $this->outputString('• Writing output file ...........');
             $outputFile = $input->getOption('output');
             file_put_contents($outputFile, $migrationScript);
-            $output->writeln(' <info>✓</info>');
-            $output->writeln('');
-            $output->writeln('<comment>Migration script generated!</comment>');
+            $this->outputLine(' <info>✓</info>');
+
+            $this->outputLine();
+            $this->outputLine('<comment>Migration script generated!</comment>');
         } else {
-            $output->writeln($migrationScript);
+            $this->outputLine($migrationScript, true);
         }
     }
 }
