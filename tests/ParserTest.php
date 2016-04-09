@@ -251,7 +251,7 @@ class ParserTest extends AbstractTest
         $database = $parser->parseDatabase($this->getDatabaseFixture('sakila.sql'));
 
         foreach ($database->getTables() as $table) {
-            $this->assertEquals($table->getCreationScript(), $table->generateCreationScript());
+            $this->assertEquals($table->getCreationScript(), $table->generateCreationScript(false, false));
         }
     }
 }

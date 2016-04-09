@@ -26,8 +26,10 @@ class Differ
             }
 
             $toTable = $toDatabase->getTableByName($fromTable->getName());
-            if ($fromTable->getCreationScript() != $toTable->getCreationScript()) {
-                $databaseDiff->addChangedTable(new ChangedTable($fromTable, $toTable));
+            if ($fromTable->generateCreationScript(true) != $toTable->generateCreationScript(true)) {
+                $changedTable = new ChangedTable($fromTable, $toTable);
+                $this->diffChangedTable($changedTable);
+                $databaseDiff->addChangedTable($changedTable);
             }
         }
 
@@ -78,8 +80,35 @@ class Differ
             $fromColumn = $fromTable->getColumnByName($toColumn->getName());
             if ($toColumn->generateCreationScript() != $fromColumn->generateCreationScript()) {
                 $changedTable->addChangedColumn($toColumn);
+                continue;
+            }
+
+            if (!$fromColumn->getPreviousColumn() && !$toColumn->getPreviousColumn()) {
+                continue;
+            } elseif (!$fromColumn->getPreviousColumn() && $toColumn->getPreviousColumn() instanceof Column) {
+                $this->addChangedColumn($changedTable, $toColumn);
+            } elseif ($fromColumn->getPreviousColumn() instanceof Column && !$toColumn->getPreviousColumn()) {
+                $this->addChangedColumn($changedTable, $toColumn);
+            } elseif ($fromColumn->getPreviousColumn()->getName() != $toColumn->getPreviousColumn()->getName()) {
+                $this->addChangedColumn($changedTable, $toColumn);
             }
         }
+    }
+
+    /**
+     * @param ChangedTable $changedTable
+     *
+     * @param Column $column
+     */
+    private function addChangedColumn(ChangedTable $changedTable, Column $column)
+    {
+        $changedTable->addChangedColumn($column);
+
+        if (!$column->getNextColumn()) {
+            return;
+        }
+
+        $this->addChangedColumn($changedTable, $column->getNextColumn());
     }
 
     /**
@@ -90,7 +119,7 @@ class Differ
         $fromTable = $changedTable->getFromTable();
         $toTable = $changedTable->getToTable();
 
-        if (empty($toTable->getPrimaryKeys())) {
+        if (empty($toTable->getPrimaryKeys()) && !empty($fromTable->getPrimaryKeys())) {
             $changedTable->setDeletedPrimaryKey(true);
 
             return;
@@ -181,16 +210,16 @@ class Differ
             $migrationScript .= sprintf('DROP TABLE `%s`;' . PHP_EOL, $deletedTable->getName());
         }
 
-        $migrationScript .= PHP_EOL . '# New Tables' . PHP_EOL;
-        foreach ($databaseDiff->getNewTables() as $newTable) {
-            $migrationScript .= PHP_EOL . sprintf('-- new table `%s`' . PHP_EOL . PHP_EOL, $newTable->getName());
-            $migrationScript .= $newTable->generateCreationScript() . PHP_EOL;
-        }
-
         $migrationScript .= PHP_EOL . '# Changed Tables' . PHP_EOL;
         foreach ($databaseDiff->getChangedTables() as $changedTable) {
             $migrationScript .= PHP_EOL . sprintf('-- changed table `%s`' . PHP_EOL . PHP_EOL, $changedTable->getName());
             $migrationScript .= $changedTable->generateAlterScript() . PHP_EOL;
+        }
+
+        $migrationScript .= PHP_EOL . '# New Tables' . PHP_EOL;
+        foreach ($databaseDiff->getNewTables() as $newTable) {
+            $migrationScript .= PHP_EOL . sprintf('-- new table `%s`' . PHP_EOL . PHP_EOL, $newTable->getName());
+            $migrationScript .= $newTable->generateCreationScript(true) . PHP_EOL;
         }
 
         $migrationScript .= PHP_EOL . '# Disable Foreign Keys Check' . PHP_EOL;

@@ -118,8 +118,6 @@ class Parser
             $characterSet = $matches['characterSet'][$i];
             $collate = $matches['collate'][$i];
 
-
-
             $column = new Column($columnName);
             $column->setDataType($dataType);
             $column->setLength($this->getColumnLength($intLength, $decimalLength, $doubleLength, $floatLength, $charLength, $binaryLength, $yearLength));
@@ -153,6 +151,8 @@ class Parser
                 $column->setPreviousColumn($lastColumn);
                 $lastColumn->setNextColumn($column);
             }
+
+            $column->setOrder($i);
 
             $table->addColumn($column);
             $lastColumn = $column;

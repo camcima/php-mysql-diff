@@ -27,7 +27,7 @@ class DifferTest extends AbstractTest
         $parser = new Parser();
 
         $fromDatabase = $parser->parseDatabase($this->getDatabaseFixture('sakila.sql'));
-        $toDatabase = $parser->parseDatabase($this->getDatabaseFixture('new_sakila.sql'));
+        $toDatabase = $parser->parseDatabase($this->getDatabaseFixture('sakila_new.sql'));
 
         $differ = new Differ();
         $result = $differ->diffDatabases($fromDatabase, $toDatabase);
@@ -47,7 +47,7 @@ class DifferTest extends AbstractTest
         $parser = new Parser();
 
         $fromDatabase = $parser->parseDatabase($this->getDatabaseFixture('sakila.sql'));
-        $toDatabase = $parser->parseDatabase($this->getDatabaseFixture('new_sakila.sql'));
+        $toDatabase = $parser->parseDatabase($this->getDatabaseFixture('sakila_new.sql'));
 
         $differ = new Differ();
         $databaseDiff = $differ->diffDatabases($fromDatabase, $toDatabase);
@@ -62,11 +62,13 @@ class DifferTest extends AbstractTest
         $parser = new Parser();
 
         $fromDatabase = $parser->parseDatabase($this->getDatabaseFixture('sakila.sql'));
-        $toDatabase = $parser->parseDatabase($this->getDatabaseFixture('new_sakila.sql'));
+        $toDatabase = $parser->parseDatabase($this->getDatabaseFixture('sakila_new.sql'));
 
         $differ = new Differ();
         $databaseDiff = $differ->diffDatabases($fromDatabase, $toDatabase);
 
         $result = $differ->generateMigrationScript($databaseDiff);
+
+        $this->assertEquals($this->getDatabaseFixture('sakila_migration.sql'), $result);
     }
 }

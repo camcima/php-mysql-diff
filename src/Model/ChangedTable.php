@@ -17,57 +17,57 @@ class ChangedTable
     /**
      * @var Column[]
      */
-    private $newColumns;
+    private $newColumns = [];
 
     /**
      * @var Column[]
      */
-    private $deletedColumns;
+    private $deletedColumns = [];
 
     /**
      * @var Column[]
      */
-    private $changedColumns;
+    private $changedColumns = [];
 
     /**
      * @var Column[]
      */
-    private $changedPrimaryKeys;
+    private $changedPrimaryKeys = [];
 
     /**
      * @var bool
      */
-    private $deletedPrimaryKey;
+    private $deletedPrimaryKey = false;
 
     /**
      * @var Index[]
      */
-    private $newIndexes;
+    private $newIndexes = [];
 
     /**
      * @var Index[]
      */
-    private $deletedIndexes;
+    private $deletedIndexes = [];
 
     /**
      * @var Index[]
      */
-    private $changedIndexes;
+    private $changedIndexes = [];
 
     /**
      * @var ForeignKey[]
      */
-    private $newForeignKeys;
+    private $newForeignKeys = [];
 
     /**
      * @var ForeignKey[]
      */
-    private $deletedForeignKeys;
+    private $deletedForeignKeys = [];
 
     /**
      * @var ForeignKey[]
      */
-    private $changedForeignKeys;
+    private $changedForeignKeys = [];
 
     /**
      * @param Table $fromTable
@@ -148,7 +148,9 @@ class ChangedTable
      */
     public function addChangedColumn(Column $changedColumn)
     {
-        $this->changedColumns[$changedColumn->getName()] = $changedColumn;
+        if (!isset($this->changedColumns[$changedColumn->getName()])) {
+            $this->changedColumns[$changedColumn->getName()] = $changedColumn;
+        }
     }
 
     /**
@@ -192,11 +194,11 @@ class ChangedTable
     }
 
     /**
-     * @param Index $index
+     * @param Index $newIndex
      */
-    public function addNewIndex(Index $index)
+    public function addNewIndex(Index $newIndex)
     {
-        $this->newIndexes[$index->getName()];
+        $this->newIndexes[$newIndex->getName()] = $newIndex;
     }
 
     /**
@@ -208,11 +210,11 @@ class ChangedTable
     }
 
     /**
-     * @param Index $index
+     * @param Index $deletedIndex
      */
-    public function addDeletedIndex(Index $index)
+    public function addDeletedIndex(Index $deletedIndex)
     {
-        $this->deletedIndexes[$index->getName()];
+        $this->deletedIndexes[$deletedIndex->getName()] = $deletedIndex;
     }
 
     /**
@@ -224,11 +226,11 @@ class ChangedTable
     }
 
     /**
-     * @param Index $index
+     * @param Index $changedIndex
      */
-    public function addChangedIndex(Index $index)
+    public function addChangedIndex(Index $changedIndex)
     {
-        $this->changedIndexes[$index->getName()];
+        $this->changedIndexes[$changedIndex->getName()] = $changedIndex;
     }
 
     /**
@@ -240,11 +242,11 @@ class ChangedTable
     }
 
     /**
-     * @param ForeignKey $foreignKey
+     * @param ForeignKey $newForeignKey
      */
-    public function addNewForeignKey(ForeignKey $foreignKey)
+    public function addNewForeignKey(ForeignKey $newForeignKey)
     {
-        $this->newForeignKeys[$foreignKey->getName()] = $foreignKey;
+        $this->newForeignKeys[$newForeignKey->getName()] = $newForeignKey;
     }
 
     /**
@@ -256,11 +258,11 @@ class ChangedTable
     }
 
     /**
-     * @param ForeignKey $foreignKey
+     * @param ForeignKey $deletedForeignKey
      */
-    public function addDeletedForeignKey(ForeignKey $foreignKey)
+    public function addDeletedForeignKey(ForeignKey $deletedForeignKey)
     {
-        $this->deletedForeignKeys[$foreignKey->getName()] = $foreignKey;
+        $this->deletedForeignKeys[$deletedForeignKey->getName()] = $deletedForeignKey;
     }
 
     /**
@@ -272,11 +274,11 @@ class ChangedTable
     }
 
     /**
-     * @param ForeignKey $foreignKey
+     * @param ForeignKey $changedForeignKey
      */
-    public function addChangedForeignKey(ForeignKey $foreignKey)
+    public function addChangedForeignKey(ForeignKey $changedForeignKey)
     {
-        $this->changedForeignKeys[$foreignKey->getName()] = $foreignKey;
+        $this->changedForeignKeys[$changedForeignKey->getName()] = $changedForeignKey;
     }
 
     /**
@@ -284,8 +286,90 @@ class ChangedTable
      */
     public function generateAlterScript()
     {
-        $alterScript = '';
+        $tableChanges = [];
+
+        if ($this->deletedPrimaryKey || (!empty($this->fromTable->getPrimaryKeys()) && !empty($this->changedPrimaryKeys))) {
+            $tableChanges[] = 'DROP PRIMARY KEY';
+        }
+
+        foreach ($this->deletedForeignKeys as $deletedForeignKey) {
+            $tableChanges[] = sprintf('DROP FOREIGN KEY `%s`', $deletedForeignKey->getName());
+        }
+
+        foreach ($this->changedForeignKeys as $changedForeignKey) {
+            $tableChanges[] = sprintf('DROP FOREIGN KEY `%s`', $changedForeignKey->getName());
+        }
+
+        foreach ($this->deletedIndexes as $deletedIndex) {
+            $tableChanges[] = sprintf('DROP INDEX `%s`', $deletedIndex->getName());
+        }
+        
+        foreach ($this->changedIndexes as $changedIndex) {
+            $tableChanges[] = sprintf('DROP INDEX `%s`', $changedIndex->getName());
+        }
+        
+        foreach ($this->deletedColumns as $deletedColumn) {
+            $tableChanges[] = sprintf('DROP COLUMN `%s`', $deletedColumn->getName());
+        }
+
+        $columnStatements = [];
+
+        foreach ($this->changedColumns as $changedColumn) {
+            $columnStatements[$changedColumn->getOrder()] = sprintf('CHANGE COLUMN `%s` %s %s', $changedColumn->getName(), $changedColumn->generateCreationScript(), $this->getAfterClause($changedColumn));
+        }
+
+        foreach ($this->newColumns as $newColumn) {
+            $columnStatements[$newColumn->getOrder()] = sprintf('ADD COLUMN %s %s', $newColumn->generateCreationScript(), $this->getAfterClause($newColumn));
+        }
+
+        ksort($columnStatements);
+
+        foreach ($columnStatements as $columnStatement) {
+            $tableChanges[] = $columnStatement;
+        }
+
+        if (!empty($this->changedPrimaryKeys)) {
+
+            $primaryKeyColumnNames = [];
+            foreach ($this->changedPrimaryKeys as $primaryKeyColumn) {
+                $primaryKeyColumnNames[] = sprintf('`%s`', $primaryKeyColumn->getName());
+            }
+
+            $tableChanges[] = sprintf('ADD PRIMARY KEY (%s)', implode(',', $primaryKeyColumnNames));
+        }
+
+        foreach ($this->changedIndexes as $changedIndex) {
+            $tableChanges[] = sprintf('ADD %s', $changedIndex->generateCreationScript());
+        }
+
+        foreach ($this->newIndexes as $newIndex) {
+            $tableChanges[] = sprintf('ADD %s', $newIndex->generateCreationScript());
+        }
+
+        foreach ($this->changedForeignKeys as $changedForeignKey) {
+            $tableChanges[] = sprintf('ADD %s', $changedForeignKey->generateCreationScript());
+        }
+
+        foreach ($this->newForeignKeys as $newForeignKey) {
+            $tableChanges[] = sprintf('ADD %s', $newForeignKey->generateCreationScript());
+        }
+
+        $alterScript = sprintf('ALTER TABLE `%s`%s  %s;', $this->getName(), PHP_EOL, implode(',' . PHP_EOL . '  ', $tableChanges));
 
         return $alterScript;
+    }
+
+    /**
+     * @param Column $column
+     *
+     * @return string
+     */
+    private function getAfterClause(Column $column)
+    {
+        if ($column->getPreviousColumn() instanceof Column) {
+            return sprintf('AFTER `%s`', $column->getPreviousColumn()->getName());
+        }
+
+        return 'FIRST';
     }
 }

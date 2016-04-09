@@ -80,6 +80,11 @@ class Column
     private $nextColumn;
 
     /**
+     * @var int
+     */
+    private $order;
+
+    /**
      * @param string $name
      */
     public function __construct($name)
@@ -317,6 +322,22 @@ class Column
     public function setNextColumn(Column $nextColumn)
     {
         $this->nextColumn = $nextColumn;
+    }
+
+    /**
+     * @return int
+     */
+    public function getOrder()
+    {
+        return $this->order;
+    }
+
+    /**
+     * @param int $order
+     */
+    public function setOrder($order)
+    {
+        $this->order = $order;
     }
 
     /**

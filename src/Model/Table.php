@@ -328,9 +328,11 @@ class Table
     }
 
     /**
+     * @param bool $ignoreAutoIncrement
+     *
      * @return string
      */
-    public function generateCreationScript()
+    public function generateCreationScript($ignoreAutoIncrement = false, $sortKeys = true)
     {
         $tableDefinitions = [];
 
@@ -346,11 +348,19 @@ class Table
         }
 
         // Indexes
+        if ($sortKeys) {
+            ksort($this->indexes);
+        }
+
         foreach ($this->indexes as $index) {
             $tableDefinitions[] = $index->generateCreationScript();
         }
 
         // Foreign Keys
+        if ($sortKeys) {
+            ksort($this->foreignKeys);
+        }
+        
         foreach ($this->foreignKeys as $foreignKey) {
             $tableDefinitions[] = $foreignKey->generateCreationScript();
         }
@@ -361,7 +371,7 @@ class Table
             $tableOptions[] = sprintf('ENGINE=%s', $this->engine);
         }
 
-        if ($this->autoIncrement) {
+        if ($this->autoIncrement && !$ignoreAutoIncrement) {
             $tableOptions[] = sprintf('AUTO_INCREMENT=%s', $this->autoIncrement);
         }
 
