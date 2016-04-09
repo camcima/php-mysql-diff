@@ -195,7 +195,6 @@ class Index
 
         $indexColumns = [];
         foreach ($this->indexColumns as $indexColumn) {
-
             $firstCharacters = '';
             if ($indexColumn->getIndexFirstCharacters()) {
                 $firstCharacters = sprintf('(%s)', $indexColumn->getIndexFirstCharacters());

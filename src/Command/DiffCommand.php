@@ -64,7 +64,6 @@ class DiffCommand extends AbstractCommand
 
         $parser = new Parser();
 
-
         $this->outputString('• Parsing initial database ......');
         $fromDatabase = $parser->parseDatabase(file_get_contents($from));
         $this->outputLine(' <info>✓</info>');

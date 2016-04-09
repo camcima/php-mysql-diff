@@ -280,7 +280,7 @@ class Parser
         } elseif (!empty($yearLength)) {
             return (int) $yearLength;
         } else {
-            return null;
+            return;
         }
     }
 
@@ -300,7 +300,7 @@ class Parser
         } elseif (!empty($floatPrecision)) {
             return (int) $floatPrecision;
         } else {
-            return null;
+            return;
         }
     }
 }

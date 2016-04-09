@@ -303,11 +303,11 @@ class ChangedTable
         foreach ($this->deletedIndexes as $deletedIndex) {
             $tableChanges[] = sprintf('DROP INDEX `%s`', $deletedIndex->getName());
         }
-        
+
         foreach ($this->changedIndexes as $changedIndex) {
             $tableChanges[] = sprintf('DROP INDEX `%s`', $changedIndex->getName());
         }
-        
+
         foreach ($this->deletedColumns as $deletedColumn) {
             $tableChanges[] = sprintf('DROP COLUMN `%s`', $deletedColumn->getName());
         }
@@ -329,7 +329,6 @@ class ChangedTable
         }
 
         if (!empty($this->changedPrimaryKeys)) {
-
             $primaryKeyColumnNames = [];
             foreach ($this->changedPrimaryKeys as $primaryKeyColumn) {
                 $primaryKeyColumnNames[] = sprintf('`%s`', $primaryKeyColumn->getName());

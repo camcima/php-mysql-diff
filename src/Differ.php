@@ -97,7 +97,6 @@ class Differ
 
     /**
      * @param ChangedTable $changedTable
-     *
      * @param Column $column
      */
     private function addChangedColumn(ChangedTable $changedTable, Column $column)

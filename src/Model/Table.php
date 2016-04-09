@@ -132,7 +132,8 @@ class Table
      *
      * @return Column
      */
-    public function getColumnByName($columnName) {
+    public function getColumnByName($columnName)
+    {
         if (!isset($this->columns[$columnName])) {
             throw new \RuntimeException(sprintf('Column "%s" not found in table ""!', $columnName, $this->name));
         }
@@ -204,7 +205,8 @@ class Table
      *
      * @return ForeignKey
      */
-    public function getForeignKeyByName($foreignKeyName) {
+    public function getForeignKeyByName($foreignKeyName)
+    {
         if (!isset($this->foreignKeys[$foreignKeyName])) {
             throw new \RuntimeException(sprintf('Foreign key "%s" not found in table ""!', $foreignKeyName, $this->name));
         }
@@ -244,7 +246,8 @@ class Table
      *
      * @return Index
      */
-    public function getIndexByName($indexName) {
+    public function getIndexByName($indexName)
+    {
         if (!isset($this->indexes[$indexName])) {
             throw new \RuntimeException(sprintf('Index "%s" not found in table ""!', $indexName, $this->name));
         }
@@ -337,8 +340,7 @@ class Table
         $tableDefinitions = [];
 
         // Columns
-        foreach ($this->columns as $column)
-        {
+        foreach ($this->columns as $column) {
             $tableDefinitions[] = $column->generateCreationScript();
         }
 
@@ -360,7 +362,7 @@ class Table
         if ($sortKeys) {
             ksort($this->foreignKeys);
         }
-        
+
         foreach ($this->foreignKeys as $foreignKey) {
             $tableDefinitions[] = $foreignKey->generateCreationScript();
         }
