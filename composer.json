@@ -1,10 +1,17 @@
 {
   "name": "camcima/php-mysql-diff",
   "type": "project",
-  "homepage": "https://github.com/linioit/bob-for-alice",
-  "license": "mit",
+  "homepage": "https://github.com/camcima/php-mysql-diff",
+  "keywords": ["database","diff","mysql","migration","generator","script"],
+  "license": "MIT",
+  "authors": [
+    {
+      "name": "Carlos Cima",
+      "role": "Developer"
+    }
+  ],
   "require": {
-    "php": ">5.4",
+    "php": ">5.6",
     "symfony/console": "^3.0"
   },
   "require-dev": {
