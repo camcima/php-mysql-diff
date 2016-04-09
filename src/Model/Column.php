@@ -70,9 +70,14 @@ class Column
     private $comment;
 
     /**
-     * @var int
+     * @var Column
      */
-    private $order;
+    private $previousColumn;
+
+    /**
+     * @var Column
+     */
+    private $nextColumn;
 
     /**
      * @param string $name
@@ -283,19 +288,35 @@ class Column
     }
 
     /**
-     * @return int
+     * @return Column
      */
-    public function getOrder()
+    public function getPreviousColumn()
     {
-        return $this->order;
+        return $this->previousColumn;
     }
 
     /**
-     * @param int $order
+     * @param Column $previousColumn
      */
-    public function setOrder($order)
+    public function setPreviousColumn(Column $previousColumn)
     {
-        $this->order = $order;
+        $this->previousColumn = $previousColumn;
+    }
+
+    /**
+     * @return Column
+     */
+    public function getNextColumn()
+    {
+        return $this->nextColumn;
+    }
+
+    /**
+     * @param Column $nextColumn
+     */
+    public function setNextColumn(Column $nextColumn)
+    {
+        $this->nextColumn = $nextColumn;
     }
 
     /**

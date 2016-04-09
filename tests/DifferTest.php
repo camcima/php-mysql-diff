@@ -14,7 +14,7 @@ class DifferTest extends AbstractTest
         $toDatabase = clone $fromDatabase;
 
         $differ = new Differ();
-        $result = $differ->diff($fromDatabase, $toDatabase);
+        $result = $differ->diffDatabases($fromDatabase, $toDatabase);
 
         $this->assertInstanceOf(DatabaseDiff::class, $result);
         $this->assertEmpty($result->getNewTables());
@@ -30,7 +30,7 @@ class DifferTest extends AbstractTest
         $toDatabase = $parser->parseDatabase($this->getDatabaseFixture('new_sakila.sql'));
 
         $differ = new Differ();
-        $result = $differ->diff($fromDatabase, $toDatabase);
+        $result = $differ->diffDatabases($fromDatabase, $toDatabase);
 
         $this->assertInstanceOf(DatabaseDiff::class, $result);
         $this->assertCount(1, $result->getNewTables());
@@ -40,5 +40,33 @@ class DifferTest extends AbstractTest
         $this->assertEquals('test2', $result->getChangedTables()[0]->getToTable()->getName());
         $this->assertCount(1, $result->getDeletedTables());
         $this->assertEquals('test1', $result->getDeletedTables()[0]->getName());
+    }
+
+    public function testIsDiffingChangedTable()
+    {
+        $parser = new Parser();
+
+        $fromDatabase = $parser->parseDatabase($this->getDatabaseFixture('sakila.sql'));
+        $toDatabase = $parser->parseDatabase($this->getDatabaseFixture('new_sakila.sql'));
+
+        $differ = new Differ();
+        $databaseDiff = $differ->diffDatabases($fromDatabase, $toDatabase);
+
+        $changedTable = $databaseDiff->getChangedTables()[0];
+
+        $differ->diffChangedTable($changedTable);
+    }
+
+    public function testIsGeneratingMigrationScript()
+    {
+        $parser = new Parser();
+
+        $fromDatabase = $parser->parseDatabase($this->getDatabaseFixture('sakila.sql'));
+        $toDatabase = $parser->parseDatabase($this->getDatabaseFixture('new_sakila.sql'));
+
+        $differ = new Differ();
+        $databaseDiff = $differ->diffDatabases($fromDatabase, $toDatabase);
+
+        $result = $differ->generateMigrationScript($databaseDiff);
     }
 }

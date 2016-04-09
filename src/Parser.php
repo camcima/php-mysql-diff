@@ -96,6 +96,7 @@ class Parser
     {
         preg_match_all(self::REGEXP_COLUMN, $table->getDefinition(), $matches);
 
+        $lastColumn = null;
         for ($i = 0; $i < count($matches[0]); $i++) {
             $columnName = $matches['columnName'][$i];
             $dataType = $matches['dataType'][$i];
@@ -147,9 +148,14 @@ class Parser
             }
 
             $column->setPrimaryKey(false);
-            $column->setOrder($i);
+
+            if ($lastColumn instanceof Column) {
+                $column->setPreviousColumn($lastColumn);
+                $lastColumn->setNextColumn($column);
+            }
 
             $table->addColumn($column);
+            $lastColumn = $column;
         }
     }
 

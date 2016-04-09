@@ -157,6 +157,16 @@ class Table
     }
 
     /**
+     * @param string $columnName
+     *
+     * @return bool
+     */
+    public function hasColumn($columnName)
+    {
+        return isset($this->columns[$columnName]);
+    }
+
+    /**
      * @return Column[]
      */
     public function getPrimaryKeys()
@@ -203,6 +213,16 @@ class Table
     }
 
     /**
+     * @param string $foreignKeyName
+     *
+     * @return bool
+     */
+    public function hasForeignKey($foreignKeyName)
+    {
+        return isset($this->foreignKeys[$foreignKeyName]);
+    }
+
+    /**
      * @return Index[]
      */
     public function getIndexes()
@@ -230,6 +250,16 @@ class Table
         }
 
         return $this->indexes[$indexName];
+    }
+
+    /**
+     * @param string $indexName
+     *
+     * @return bool
+     */
+    public function hasIndex($indexName)
+    {
+        return isset($this->indexes[$indexName]);
     }
 
     /**
@@ -283,6 +313,23 @@ class Table
     /**
      * @return string
      */
+    public function generatePrimaryKeyCreationScript()
+    {
+        if (empty($this->primaryKeys)) {
+            return '';
+        }
+
+        $primaryKeys = [];
+        foreach ($this->primaryKeys as $primaryKeyColumn) {
+            $primaryKeys[] = sprintf('`%s`', $primaryKeyColumn->getName());
+        }
+
+        return sprintf('PRIMARY KEY (%s)', implode(',', $primaryKeys));
+    }
+
+    /**
+     * @return string
+     */
     public function generateCreationScript()
     {
         $tableDefinitions = [];
@@ -295,13 +342,7 @@ class Table
 
         // Primary Keys
         if (!empty($this->primaryKeys)) {
-
-            $primaryKeys = [];
-            foreach ($this->primaryKeys as $primaryKeyColumn) {
-                $primaryKeys[] = sprintf('`%s`', $primaryKeyColumn->getName());
-            }
-
-            $tableDefinitions[] = sprintf('PRIMARY KEY (%s)', implode(',', $primaryKeys));
+            $tableDefinitions[] = $this->generatePrimaryKeyCreationScript();
         }
 
         // Indexes
