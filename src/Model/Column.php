@@ -17,7 +17,7 @@ class Column
     /**
      * @var string
      */
-    private $dataType;
+    private $columnType;
 
     /**
      * @var string
@@ -119,17 +119,17 @@ class Column
     /**
      * @return string
      */
-    public function getDataType()
+    public function getColumnType()
     {
-        return $this->dataType;
+        return $this->columnType;
     }
 
     /**
-     * @param string $dataType
+     * @param string $columnType
      */
-    public function setDataType($dataType)
+    public function setColumnType($columnType)
     {
-        $this->dataType = $dataType;
+        $this->columnType = $columnType;
     }
 
     /**
@@ -357,7 +357,7 @@ class Column
 
         if (!$this->nullable) {
             $columnOptions[] = 'NOT NULL';
-        } elseif ($this->dataType == 'timestamp') {
+        } elseif ($this->columnType == 'timestamp') {
             $columnOptions[] = 'NULL';
         }
 
@@ -377,6 +377,6 @@ class Column
             $columnOptions[] = sprintf('COMMENT \'%s\'', $this->comment);
         }
 
-        return trim(sprintf('`%s` %s %s', $this->name, $this->dataType, implode(' ', $columnOptions)));
+        return trim(sprintf('`%s` %s %s', $this->name, $this->columnType, implode(' ', $columnOptions)));
     }
 }

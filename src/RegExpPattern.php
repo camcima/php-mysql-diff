@@ -5,7 +5,7 @@ namespace Camcima\MySqlDiff;
 
 class RegExpPattern
 {
-    private static $dataTypeRegExps = [
+    private static $columnTypeRegExps = [
         '(?:tiny|small|medium|big)?int\((?<intLength>\d+)\)(?:\s+unsigned)?',
         'float(?:\s+unsigned)?(?:\((?<floatLength>\d+),(?<floatPrecision>\d+)\))?',
         'binary',
@@ -49,7 +49,7 @@ class RegExpPattern
     {
         $pattern = '/\s*';
         $pattern .= '`(?<columnName>\S+?)`\s+';
-        $pattern .= sprintf('(?<dataType>%s)\s*', implode('|', self::$dataTypeRegExps));
+        $pattern .= sprintf('(?<columnType>%s)\s*', implode('|', self::$columnTypeRegExps));
         $pattern .= '(?:CHARACTER SET\s+(?<characterSet>\S+))?\s*';
         $pattern .= '(?:COLLATE\s+(?<collate>\S+))?\s*';
         $pattern .= '(?<nullable>NULL|NOT NULL)?\s*';

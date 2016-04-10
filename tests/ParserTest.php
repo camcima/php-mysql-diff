@@ -54,7 +54,7 @@ class ParserTest extends AbstractTest
         $this->assertArrayHasKey('actor_id', $actorTable->getColumns());
         $this->assertInstanceOf(Column::class, $actorTable->getColumnByName('actor_id'));
         $this->assertEquals('actor_id', $actorTable->getColumnByName('actor_id')->getName());
-        $this->assertEquals('smallint(5) unsigned', $actorTable->getColumnByName('actor_id')->getDataType());
+        $this->assertEquals('smallint(5) unsigned', $actorTable->getColumnByName('actor_id')->getColumnType());
         $this->assertEquals(5 , $actorTable->getColumnByName('actor_id')->getLength());
         $this->assertNull($actorTable->getColumnByName('actor_id')->getPrecision());
         $this->assertFalse($actorTable->getColumnByName('actor_id')->isNullable());
@@ -68,7 +68,7 @@ class ParserTest extends AbstractTest
         $this->assertArrayHasKey('last_update', $actorTable->getColumns());
         $this->assertInstanceOf(Column::class, $actorTable->getColumnByName('last_update'));
         $this->assertEquals('last_update', $actorTable->getColumnByName('last_update')->getName());
-        $this->assertEquals('timestamp', $actorTable->getColumnByName('last_update')->getDataType());
+        $this->assertEquals('timestamp', $actorTable->getColumnByName('last_update')->getColumnType());
         $this->assertNull($actorTable->getColumnByName('last_update')->getLength());
         $this->assertNull($actorTable->getColumnByName('last_update')->getPrecision());
         $this->assertFalse($actorTable->getColumnByName('last_update')->isNullable());
@@ -94,7 +94,7 @@ class ParserTest extends AbstractTest
         $this->assertArrayHasKey('password', $staffTable->getColumns());
         $this->assertInstanceOf(Column::class, $staffTable->getColumnByName('password'));
         $this->assertEquals('password', $staffTable->getColumnByName('password')->getName());
-        $this->assertEquals('varchar(40)', $staffTable->getColumnByName('password')->getDataType());
+        $this->assertEquals('varchar(40)', $staffTable->getColumnByName('password')->getColumnType());
         $this->assertEquals(40 , $staffTable->getColumnByName('password')->getLength());
         $this->assertNull($staffTable->getColumnByName('password')->getPrecision());
         $this->assertTrue($staffTable->getColumnByName('password')->isNullable());
@@ -120,7 +120,7 @@ class ParserTest extends AbstractTest
         $this->assertArrayHasKey('test1', $testTable->getColumns());
         $this->assertInstanceOf(Column::class, $testTable->getColumnByName('test1'));
         $this->assertEquals('test1', $testTable->getColumnByName('test1')->getName());
-        $this->assertEquals('int(10)', $testTable->getColumnByName('test1')->getDataType());
+        $this->assertEquals('int(10)', $testTable->getColumnByName('test1')->getColumnType());
         $this->assertEquals(10 , $testTable->getColumnByName('test1')->getLength());
         $this->assertNull($testTable->getColumnByName('test1')->getPrecision());
         $this->assertTrue($testTable->getColumnByName('test1')->isNullable());

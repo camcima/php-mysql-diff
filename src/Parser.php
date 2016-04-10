@@ -92,7 +92,7 @@ class Parser
         $lastColumn = null;
         for ($i = 0; $i < count($matches[0]); $i++) {
             $columnName = $matches['columnName'][$i];
-            $dataType = $matches['dataType'][$i];
+            $columnType = $matches['columnType'][$i];
             $intLength = $matches['intLength'][$i];
             $decimalLength = $matches['decimalLength'][$i];
             $doubleLength = $matches['doubleLength'][$i];
@@ -112,7 +112,7 @@ class Parser
             $collate = $matches['collate'][$i];
 
             $column = new Column($columnName);
-            $column->setDataType($dataType);
+            $column->setColumnType($columnType);
             $column->setLength($this->getColumnLength($intLength, $decimalLength, $doubleLength, $floatLength, $charLength, $binaryLength, $yearLength));
             $column->setPrecision($this->getColumnPrecision($decimalPrecision, $doublePrecision, $floatPrecision));
             $column->setNullable($nullable != 'NOT NULL');
