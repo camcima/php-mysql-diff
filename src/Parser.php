@@ -11,13 +11,6 @@ use Camcima\MySqlDiff\Model\Table;
 
 class Parser
 {
-    const REGEXP_TABLES = '/(?<creationScript>CREATE\s+TABLE\s+`(?<tableName>\S+)`\s+\((?<tableDefinition>[^;]+)\)(?:\s+ENGINE=(?<engine>\S+))?\s*(?:AUTO_INCREMENT=(?<autoIncrement>\d+))?\s*(?:DEFAULT CHARSET=(?<defaultCharset>\S+))?\s*;)/s';
-    const REGEXP_COLUMN = '/\s*`(?<columnName>\S+?)`\s+(?<dataType>(?:tiny|small|medium|big)?int\((?<intLength>\d+)\)(?:\s+unsigned)?|float(?:\s+unsigned)?(?:\((?<floatLength>\d+),(?<floatPrecision>\d+)\))?|binary|real|decimal\((?<decimalLength>\d+),(?<decimalPrecision>\d+)\)|double(?:\((?<doubleLength>\d+),(?<doublePrecision>\d+)\))?|datetime|date|time|timestamp|year\((?<yearLength>\d)\)|geometry|(?:var|nvar)?char\((?<charLength>\d+)\)|(?:var)?binary\((?<binaryLength>\d+)\)|(?:tiny|medium|long)?text|(?:tiny|medium|long)?blob|enum\(.+\)|set\(.+\))\s*(?:CHARACTER SET\s+(?<characterSet>\S+))?\s*(?:COLLATE\s+(?<collate>\S+))?\s*(?<nullable>NULL|NOT NULL)?\s*(?<autoIncrement>AUTO_INCREMENT)?\s*(?:DEFAULT (?<defaultValue>\S+|\'[^\']+\'))?\s*(?:ON UPDATE (?<onUpdateValue>\S+))?\s*(?:COMMENT \'(?<comment>[^\']+)\')?\s*(?:,|$)/';
-    const REGEXP_PRIMARY_KEY = '/PRIMARY KEY \((?<primaryKey>.+?)\)/';
-    const REGEXP_FOREIGN_KEY = '/CONSTRAINT `(?<name>\S+?)`\s+FOREIGN KEY\s+\(`(?<column>\S+?)`\)\s+REFERENCES\s+`(?<referenceTable>\S+?)`\s*\(`(?<referenceColumn>\S+?)`\)\s*(?<onDelete>ON DELETE .+?)?\s*(?<onUpdate>ON UPDATE .+?)?\s*(?:,|$)/';
-    const REGEXP_INDEX = '/\s*(?<spatial>SPATIAL)?\s*(?<unique>UNIQUE)?\s*(?<fullText>FULLTEXT)?\s*KEY\s+`(?<name>\S+?)`\s+\((?<columns>(?:`[^`]+`(?:\(\d+\))?,?)+)\)\s*(?<options>[^,]+?)?\s*(?:,|$)/';
-    const REGEXP_INDEX_COLUMN = '/^(?<columnName>[^\(]+)\s*(?:\((?<firstCharacters>\d+)\))?$/';
-
     /**
      * @param string $sqlScript
      *
@@ -45,7 +38,7 @@ class Parser
      */
     public function parseTables($sqlScript)
     {
-        preg_match_all(self::REGEXP_TABLES, $sqlScript, $matches);
+        preg_match_all(RegExpPattern::tables(), $sqlScript, $matches);
 
         $tables = [];
         for ($i = 0; $i < count($matches[0]); $i++) {
@@ -94,7 +87,7 @@ class Parser
      */
     public function parseColumns(Table $table)
     {
-        preg_match_all(self::REGEXP_COLUMN, $table->getDefinition(), $matches);
+        preg_match_all(RegExpPattern::column(), $table->getDefinition(), $matches);
 
         $lastColumn = null;
         for ($i = 0; $i < count($matches[0]); $i++) {
@@ -164,7 +157,7 @@ class Parser
      */
     public function parsePrimaryKey(Table $table)
     {
-        if (preg_match(self::REGEXP_PRIMARY_KEY, $table->getDefinition(), $matches) !== 1) {
+        if (preg_match(RegExpPattern::primaryKey(), $table->getDefinition(), $matches) !== 1) {
             return;
         }
 
@@ -182,7 +175,7 @@ class Parser
      */
     public function parseForeignKeys(Table $table)
     {
-        preg_match_all(self::REGEXP_FOREIGN_KEY, $table->getDefinition(), $matches);
+        preg_match_all(RegExpPattern::foreignKey(), $table->getDefinition(), $matches);
 
         for ($i = 0; $i < count($matches[0]); $i++) {
             $name = $matches['name'][$i];
@@ -214,7 +207,7 @@ class Parser
      */
     public function parseIndexes(Table $table)
     {
-        preg_match_all(self::REGEXP_INDEX, $table->getDefinition(), $matches);
+        preg_match_all(RegExpPattern::index(), $table->getDefinition(), $matches);
 
         for ($i = 0; $i < count($matches[0]); $i++) {
             $indexName = $matches['name'][$i];
@@ -227,7 +220,7 @@ class Parser
             $index = new Index($indexName);
 
             foreach ($indexColumnNames as $indexColumnDefinition) {
-                preg_match(self::REGEXP_INDEX_COLUMN, $indexColumnDefinition, $definitionMatch);
+                preg_match(RegExpPattern::indexColumn(), $indexColumnDefinition, $definitionMatch);
 
                 $indexColumnName = $definitionMatch['columnName'];
 
