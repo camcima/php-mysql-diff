@@ -22,5 +22,6 @@
     "psr-4": {
       "Camcima\\MySqlDiff\\": "src/"
     }
-  }
+  },
+  "bin": ["php-mysql-diff"]
 }
