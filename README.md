@@ -92,7 +92,9 @@ Diff completed!
 ```
 
 ▲ = only present in the TO database
+
 ► = different definitions between FROM and TO databases
+
 ▼ = only present in the FROM database
 
 ##### Migration Script
