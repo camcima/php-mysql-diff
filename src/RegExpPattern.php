@@ -65,6 +65,14 @@ class RegExpPattern
     /**
      * @return string
      */
+    public static function dataType()
+    {
+        return '/(?<dataType>[^\(]+)\s*(?:\([^\)]+\))?\s*(?<unsigned>unsigned)?/';
+    }
+
+    /**
+     * @return string
+     */
     public static function primaryKey()
     {
         return '/PRIMARY KEY \((?<primaryKey>.+?)\)/';

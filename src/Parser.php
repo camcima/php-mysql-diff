@@ -113,6 +113,13 @@ class Parser
 
             $column = new Column($columnName);
             $column->setColumnType($columnType);
+
+            preg_match(RegExpPattern::dataType(), $columnType, $dataTypeMatches);
+            $dataType = $dataTypeMatches['dataType'];
+            $unsigned = isset($dataTypeMatches['unsigned']) && !empty($dataTypeMatches['unsigned']);
+            $column->setDataType($dataType);
+            $column->setUnsigned($unsigned);
+
             $column->setLength($this->getColumnLength($intLength, $decimalLength, $doubleLength, $floatLength, $charLength, $binaryLength, $yearLength));
             $column->setPrecision($this->getColumnPrecision($decimalPrecision, $doublePrecision, $floatPrecision));
             $column->setNullable($nullable != 'NOT NULL');

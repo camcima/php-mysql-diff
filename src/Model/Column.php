@@ -22,6 +22,16 @@ class Column
     /**
      * @var string
      */
+    private $dataType;
+
+    /**
+     * @var bool
+     */
+    private $unsigned;
+
+    /**
+     * @var string
+     */
     private $characterSet;
 
     /**
@@ -130,6 +140,38 @@ class Column
     public function setColumnType($columnType)
     {
         $this->columnType = $columnType;
+    }
+
+    /**
+     * @return string
+     */
+    public function getDataType()
+    {
+        return $this->dataType;
+    }
+
+    /**
+     * @param string $dataType
+     */
+    public function setDataType($dataType)
+    {
+        $this->dataType = $dataType;
+    }
+
+    /**
+     * @return bool
+     */
+    public function isUnsigned()
+    {
+        return $this->unsigned;
+    }
+
+    /**
+     * @param bool $unsigned
+     */
+    public function setUnsigned($unsigned)
+    {
+        $this->unsigned = $unsigned;
     }
 
     /**
