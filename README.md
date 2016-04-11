@@ -50,7 +50,18 @@ $ php-mysql-diff diff <from> <to> [-i <ignore-tables-file>]
 
 where `from` is the path to the initial database creation script and `to` is the path to the target database creation script.
 
+**Ignore Tables**
+
 Use the `-i` option to ignore tables during comparison. The file format is a list of regular expressions to match the table names to be ignored, one per line.
+
+Example:
+```
+/^employee.+/
+/^catalog$/
+/^test[\d]$/
+```
+
+**Output File**
 
 The output will be like this:
 
@@ -107,7 +118,18 @@ $ php-mysql-diff migrate <from> <to> [-o <output-file>] [-i <ignore-tables-file>
 
 where `from` is the path to the initial database creation script and `to` is the path to the target database creation script.
 
+**Ignore Tables**
+
 Use the `-i` option to ignore tables during comparison. The file format is a list of regular expressions to match the table names to be ignored, one per line.
+
+Example:
+```
+/^employee.+/
+/^catalog$/
+/^test[\d]$/
+```
+
+**Output File**
 
 If the `-o` option is not used, the migration script will be output to the `stdout`. 
 
