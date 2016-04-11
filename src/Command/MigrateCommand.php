@@ -32,6 +32,12 @@ class MigrateCommand extends AbstractCommand
                 InputOption::VALUE_OPTIONAL,
                 'Output migration script to a file'
             )
+            ->addOption(
+                'ignore',
+                'i',
+                InputOption::VALUE_OPTIONAL,
+                'Table ignore list'
+            )
         ;
     }
 
@@ -54,12 +60,23 @@ class MigrateCommand extends AbstractCommand
 
         if (!file_exists($from)) {
             $this->outputLine('<error>' . sprintf('File not found: %s', $from) . '</error>');
-            exit;
+            exit(1);
         }
 
         if (!file_exists($to)) {
             $this->outputLine('<error>' . sprintf('File not found: %s', $to) . '</error>');
-            exit;
+            exit(1);
+        }
+
+        $ignoreTables = [];
+        if ($input->getOption('ignore')) {
+            $ignoreListFile = $input->getOption('ignore');
+            if (!file_exists($ignoreListFile)) {
+                $this->outputLine('<error>' . sprintf('File not found: %s', $ignoreListFile) . '</error>');
+                exit(1);
+            }
+
+            $ignoreTables = file($ignoreListFile);
         }
 
         $parser = new Parser();
@@ -74,7 +91,7 @@ class MigrateCommand extends AbstractCommand
 
         $this->outputString('• Comparing databases ...........');
         $differ = new Differ();
-        $databaseDiff = $differ->diffDatabases($fromDatabase, $toDatabase);
+        $databaseDiff = $differ->diffDatabases($fromDatabase, $toDatabase, $ignoreTables);
         $this->outputLine(' <info>✓</info>');
 
         if ($databaseDiff->isEmptyDifferences()) {

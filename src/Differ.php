@@ -12,14 +12,20 @@ class Differ
     /**
      * @param Database $fromDatabase
      * @param Database $toDatabase
+     * @param array $ignoreList
      *
      * @return DatabaseDiff
      */
-    public function diffDatabases(Database $fromDatabase, Database $toDatabase)
+    public function diffDatabases(Database $fromDatabase, Database $toDatabase, array $ignoreList = [])
     {
         $databaseDiff = new DatabaseDiff();
 
         foreach ($fromDatabase->getTables() as $fromTable) {
+
+            if ($this->isTableIgnored($fromTable->getName(), $ignoreList)) {
+                continue;
+            }
+
             if (!$toDatabase->hasTable($fromTable->getName())) {
                 $databaseDiff->addDeletedTable($fromTable);
                 continue;
@@ -34,6 +40,11 @@ class Differ
         }
 
         foreach ($toDatabase->getTables() as $toTable) {
+
+            if ($this->isTableIgnored($toTable->getName(), $ignoreList)) {
+                continue;
+            }
+
             if (!$fromDatabase->hasTable($toTable->getName())) {
                 $databaseDiff->addNewTable($toTable);
             }
@@ -227,5 +238,22 @@ class Differ
         $migrationScript .= 'SET FOREIGN_KEY_CHECKS = 1;' . PHP_EOL;
 
         return $migrationScript;
+    }
+
+    /**
+     * @param string $tableName
+     * @param array $ignoreList
+     *
+     * @return bool
+     */
+    private function isTableIgnored($tableName, array $ignoreList)
+    {
+        foreach ($ignoreList as $ignoreRegExp) {
+            if (preg_match($ignoreRegExp, $tableName) === 1) {
+                return true;
+            }
+        }
+
+        return false;
     }
 }
