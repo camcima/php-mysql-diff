@@ -101,7 +101,9 @@ class Differ
      */
     private function addChangedColumn(ChangedTable $changedTable, Column $column)
     {
-        $changedTable->addChangedColumn($column);
+        if (!$changedTable->hasNewColumn($column->getName())) {
+            $changedTable->addChangedColumn($column);
+        }
 
         if (!$column->getNextColumn()) {
             return;

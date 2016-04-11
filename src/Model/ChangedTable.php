@@ -117,6 +117,20 @@ class ChangedTable
     public function addNewColumn(Column $newColumn)
     {
         $this->newColumns[$newColumn->getName()] = $newColumn;
+
+        if (isset($this->changedColumns[$newColumn->getName()])) {
+            unset($this->changedColumns[$newColumn->getName()]);
+        }
+    }
+
+    /**
+     * @param $columnName
+     *
+     * @return bool
+     */
+    public function hasNewColumn($columnName)
+    {
+        return isset($this->newColumns[$columnName]);
     }
 
     /**
