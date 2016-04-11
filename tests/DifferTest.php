@@ -42,6 +42,23 @@ class DifferTest extends AbstractTest
         $this->assertEquals('test1', $result->getDeletedTables()[0]->getName());
     }
 
+    public function testIsDiffingDifferentDatabasesWithIgnoredTables()
+    {
+        $parser = new Parser();
+
+        $fromDatabase = $parser->parseDatabase($this->getDatabaseFixture('sakila.sql'));
+        $toDatabase = $parser->parseDatabase($this->getDatabaseFixture('sakila_new.sql'));
+
+        $differ = new Differ();
+        $result = $differ->diffDatabases($fromDatabase, $toDatabase, ['/^test[12]$/']);
+
+        $this->assertInstanceOf(DatabaseDiff::class, $result);
+        $this->assertCount(1, $result->getNewTables());
+        $this->assertEquals('test3', $result->getNewTables()[0]->getName());
+        $this->assertEmpty($result->getChangedTables());
+        $this->assertEmpty($result->getDeletedTables());
+    }
+
     public function testIsDiffingChangedTable()
     {
         $parser = new Parser();
