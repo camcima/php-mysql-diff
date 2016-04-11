@@ -26,12 +26,6 @@ class DiffCommand extends AbstractCommand
                 InputArgument::REQUIRED,
                 'File path of the creation script of the target database'
             )
-            ->addOption(
-                'output',
-                'o',
-                InputOption::VALUE_OPTIONAL,
-                'Output differences to a file'
-            )
         ;
     }
 
