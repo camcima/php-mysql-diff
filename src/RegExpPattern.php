@@ -32,11 +32,12 @@ class RegExpPattern
     public static function tables()
     {
         $pattern = '/(?<creationScript>CREATE\s+TABLE\s+`(?<tableName>\S+)`\s+';
-        $pattern .= '\((?<tableDefinition>[^;]+)\)';
-        $pattern .= '(?:\s+ENGINE=(?<engine>\S+))?\s*';
+        $pattern .= '\((?<tableDefinition>[^;\/]+)\)';
+        $pattern .= '(?:\s+ENGINE=(?<engine>[^;\s]+))?\s*';
         $pattern .= '(?:AUTO_INCREMENT=(?<autoIncrement>\d+))?\s*';
-        $pattern .= '(?:DEFAULT CHARSET=(?<defaultCharset>\S+))?\s*';
-        $pattern .= ';)/';
+        $pattern .= '(?:DEFAULT CHARSET=(?<defaultCharset>[^;\s]+))?\s*)';
+        $pattern .= '(?:\/\*.+?\*\/)?\s*';
+        $pattern .= ';/';
         $pattern .= 's'; // modifier
 
         return $pattern;

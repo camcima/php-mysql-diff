@@ -51,7 +51,7 @@ class Parser
 
             $table = new Table($name);
             $table->setDefinition(trim($definition));
-            $table->setCreationScript(trim($creationScript));
+            $table->setCreationScript(trim($creationScript) . ';');
 
             if ($engine) {
                 $table->setEngine($engine);

@@ -262,4 +262,15 @@ class ParserTest extends AbstractTest
             $this->assertEquals($table->getCreationScript(), $table->generateCreationScript(false, false));
         }
     }
+
+    public function testIsParsingTableWithPartitionDefinitions()
+    {
+        $parser = new Parser();
+
+        $database = $parser->parseDatabase($this->getDatabaseFixture('partition.sql'));
+
+        $this->assertInstanceOf(Database::class, $database);
+        $this->assertCount(1, $database->getTables());
+        $this->assertCount(9, $database->getTableByName('export')->getColumns());
+    }
 }
