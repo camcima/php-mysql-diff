@@ -36,6 +36,7 @@ class RegExpPattern
         $pattern .= '(?:\s+ENGINE=(?<engine>[^;\s]+))?\s*';
         $pattern .= '(?:AUTO_INCREMENT=(?<autoIncrement>\d+))?\s*';
         $pattern .= '(?:DEFAULT CHARSET=(?<defaultCharset>[^;\s]+))?\s*)';
+        $pattern .= '(?:COLLATE=.+?)?\s*';
         $pattern .= '(?:\/\*.+?\*\/)?\s*';
         $pattern .= ';/';
         $pattern .= 's'; // modifier
