@@ -58,7 +58,7 @@ class RegExpPattern
         $pattern .= '(?<autoIncrement>AUTO_INCREMENT)?\s*';
         $pattern .= '(?:DEFAULT (?<defaultValue>\S+|\'[^\']+\'))?\s*';
         $pattern .= '(?:ON UPDATE (?<onUpdateValue>\S+))?\s*';
-        $pattern .= '(?:COMMENT \'(?<comment>[^\']+)\')?\s*';
+        $pattern .= '(?:COMMENT \'(?<comment>([^\']+|\'\'))\')?\s*';
         $pattern .= '(?:,|$)/';
 
         return $pattern;
