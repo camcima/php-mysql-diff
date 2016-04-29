@@ -2,6 +2,9 @@
 
 namespace Camcima\MySqlDiff;
 
+/*
+* Thanks to http://stackoverflow.com/users/588916/collapsar, http://stackoverflow.com/a/36933805/123594
+*/
 
 class RegExpPattern
 {
@@ -11,7 +14,7 @@ class RegExpPattern
         'binary',
         'real',
         'decimal\((?<decimalLength>\d+),(?<decimalPrecision>\d+)\)',
-        'double(?:\((?<doubleLength>\d+),(?<doublePrecision>\d+)\))?',
+        'double(?:\s+unsigned)?(?:\((?<doubleLength>\d+),(?<doublePrecision>\d+)\))?',
         'datetime',
         'date',
         'time',
@@ -32,7 +35,7 @@ class RegExpPattern
     public static function tables()
     {
         $pattern = '/(?<creationScript>CREATE\s+TABLE\s+`(?<tableName>\S+)`\s+';
-        $pattern .= '\((?<tableDefinition>[^;\/]+)\)';
+        $pattern .= '\((?<tableDefinition>([^;\/]+?(.COMMENT.\'[^\']+((\'\')[^\']*)*\'(?!=\')))+.*?|[^;\/]+?)\)';
         $pattern .= '(?:\s+ENGINE=(?<engine>[^;\s]+))?\s*';
         $pattern .= '(?:AUTO_INCREMENT=(?<autoIncrement>\d+))?\s*';
         $pattern .= '(?:DEFAULT CHARSET=(?<defaultCharset>[^;\s]+))?\s*)';
@@ -58,7 +61,7 @@ class RegExpPattern
         $pattern .= '(?<autoIncrement>AUTO_INCREMENT)?\s*';
         $pattern .= '(?:DEFAULT (?<defaultValue>\S+|\'[^\']+\'))?\s*';
         $pattern .= '(?:ON UPDATE (?<onUpdateValue>\S+))?\s*';
-        $pattern .= '(?:COMMENT \'(?<comment>[^\']+)\')?\s*';
+        $pattern .= '(?:COMMENT \'(?<comment>([^\']+|\'\'))\')?\s*';
         $pattern .= '(?:,|$)/';
 
         return $pattern;
