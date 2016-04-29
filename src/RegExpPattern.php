@@ -11,7 +11,7 @@ class RegExpPattern
         'binary',
         'real',
         'decimal\((?<decimalLength>\d+),(?<decimalPrecision>\d+)\)',
-        'double(?:\((?<doubleLength>\d+),(?<doublePrecision>\d+)\))?',
+        'double(?:\((?<doubleLength>\d+),(?<doublePrecision>\d+)\))?(?:\s+unsigned)?',
         'datetime',
         'date',
         'time',
@@ -69,7 +69,7 @@ class RegExpPattern
      */
     public static function dataType()
     {
-        return '/(?<dataType>[^\(]+)\s*(?:\([^\)]+\))?\s*(?<unsigned>unsigned)?/';
+        return '/(?<dataType>[^\(\s]+)\s*(?:\([^\)]+\))?\s*(?<unsigned>unsigned)?/';
     }
 
     /**

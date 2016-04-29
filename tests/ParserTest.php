@@ -273,4 +273,17 @@ class ParserTest extends AbstractTest
         $this->assertCount(1, $database->getTables());
         $this->assertCount(9, $database->getTableByName('export')->getColumns());
     }
+
+    public function testIsParsingDoubleUnsignedType()
+    {
+        $parser = new Parser();
+
+        $database = $parser->parseDatabase($this->getDatabaseFixture('jos_finder_links.sql'));
+
+        $this->assertInstanceOf(Database::class, $database);
+        $this->assertCount(1, $database->getTables());
+        $this->assertCount(19, $database->getTableByName('jos_finder_links')->getColumns());
+        $this->assertEquals('double unsigned', $database->getTableByName('jos_finder_links')->getColumnByName('list_price')->getColumnType());
+        $this->assertEquals('double', $database->getTableByName('jos_finder_links')->getColumnByName('list_price')->getDataType());
+    }
 }
