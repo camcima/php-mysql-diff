@@ -11,7 +11,7 @@ class RegExpPattern
         'binary',
         'real',
         'decimal\((?<decimalLength>\d+),(?<decimalPrecision>\d+)\)',
-        'double(?:\((?<doubleLength>\d+),(?<doublePrecision>\d+)\))?',
+        'double(?:\s+unsigned)?(?:\((?<doubleLength>\d+),(?<doublePrecision>\d+)\))?',
         'datetime',
         'date',
         'time',
