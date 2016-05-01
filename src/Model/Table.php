@@ -350,7 +350,7 @@ class Table
             } else {
                 $primaryKey = sprintf('`%s`', $primaryKeyColumn->getName());
             }
-            
+
             $primaryKeys[] = $primaryKey;
         }
 
@@ -359,6 +359,7 @@ class Table
 
     /**
      * @param bool $ignoreAutoIncrement
+     * @param bool $sortKeys
      *
      * @return string
      */

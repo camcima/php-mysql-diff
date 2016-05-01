@@ -139,7 +139,7 @@ class Parser
             }
 
             if (!empty($comment)) {
-                $column->setComment($comment);
+                $column->setComment(str_replace('\'\'','\'', $comment));
             }
 
             if (!empty($characterSet)) {

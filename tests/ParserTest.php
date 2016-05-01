@@ -302,4 +302,25 @@ class ParserTest extends AbstractTest
 
         $this->assertEquals($creationScript, $database->getTableByName('jos_extwebdav_properties')->generateCreationScript());
     }
+
+    public function testIsParsingCommentsWithSpecialCharacters()
+    {
+        $creationScript = $this->getDatabaseFixture('jos_ucm_history.sql');
+
+        $parser = new Parser();
+
+        $database = $parser->parseDatabase($creationScript);
+
+        $this->assertInstanceOf(Database::class, $database);
+        $this->assertCount(1, $database->getTables());
+        $this->assertCount(10, $database->getTableByName('jos_ucm_history')->getColumns());
+        $this->assertCount(1, $database->getTableByName('jos_ucm_history')->getPrimaryKeys());
+        $this->assertCount(2, $database->getTableByName('jos_ucm_history')->getIndexes());
+        $this->assertEquals(1, $database->getTableByName('jos_ucm_history')->getAutoIncrement());
+        $this->assertEquals('utf8', $database->getTableByName('jos_ucm_history')->getDefaultCharset());
+        $this->assertEquals('InnoDB', $database->getTableByName('jos_ucm_history')->getEngine());
+        $this->assertEquals('SHA1 hash of the version\'s data column.', $database->getTableByName('jos_ucm_history')->getColumnByName('sha1_hash')->getComment());
+        $this->assertEquals('`sha1_hash` varchar(50) NOT NULL DEFAULT \'\' COMMENT \'SHA1 hash of the version\'\'s data column.\'', $database->getTableByName('jos_ucm_history')->getColumnByName('sha1_hash')->generateCreationScript());
+        $this->assertEquals('0=auto delete; 1=keep', $database->getTableByName('jos_ucm_history')->getColumnByName('keep_forever')->getComment());
+    }
 }

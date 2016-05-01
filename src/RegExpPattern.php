@@ -32,12 +32,17 @@ class RegExpPattern
     public static function tables()
     {
         $pattern = '/(?<creationScript>CREATE\s+TABLE\s+(?<ifNotExists>IF NOT EXISTS)?\s*`(?<tableName>\S+)`\s+';
-        $pattern .= '\((?<tableDefinition>[^;\/]+)\)';
+        $pattern .= '\((?<tableDefinition>[^\/]+)\)';
+        $pattern .= '(';
         $pattern .= '(?:\s+ENGINE=(?<engine>[^;\s]+))?\s*';
+        $pattern .= '|';
         $pattern .= '(?:AUTO_INCREMENT=(?<autoIncrement>\d+))?\s*';
-        $pattern .= '(?:DEFAULT CHARSET=(?<defaultCharset>[^;\s]+))?\s*)';
+        $pattern .= '|';
+        $pattern .= '(?:DEFAULT CHARSET=(?<defaultCharset>[^;\s]+))?\s*';
+        $pattern .= '|';
         $pattern .= '(?:COLLATE=.+?)?\s*';
-        $pattern .= '(?:\/\*.+?\*\/)?\s*';
+        $pattern .= ')*';
+        $pattern .= ')(?:\/\*.+?\*\/)?\s*';
         $pattern .= ';/';
         $pattern .= 's'; // modifier
 
@@ -58,7 +63,7 @@ class RegExpPattern
         $pattern .= '(?<autoIncrement>AUTO_INCREMENT)?\s*';
         $pattern .= '(?:DEFAULT (?<defaultValue>\S+|\'[^\']+\'))?\s*';
         $pattern .= '(?:ON UPDATE (?<onUpdateValue>\S+))?\s*';
-        $pattern .= '(?:COMMENT \'(?<comment>[^\']+)\')?\s*';
+        $pattern .= '(?:COMMENT \'(?<comment>([^\']|\'\')+)\')?\s*';
         $pattern .= '(?:,|$)/';
 
         return $pattern;
