@@ -35,7 +35,8 @@ class RegExpPattern
     public static function tables()
     {
         $pattern = '/(?<creationScript>CREATE\s+TABLE\s+`(?<tableName>\S+)`\s+';
-        $pattern .= '\((?<tableDefinition>([^;\/]+?(.COMMENT.\'[^\']+((\'\')[^\']*)*\'(?!=\')))+.*?|[^;\/]+?)\)';
+        $pattern .= '\((?<tableDefinition>([^;\/]+?';
+        $pattern .=     '(.COMMENT.\'[^\']+((\'\')[^\']*)*\'(?!=\')))+.*?|[^;\/]+?)\)';
         $pattern .= '(?:\s+ENGINE=(?<engine>[^;\s]+))?\s*';
         $pattern .= '(?:AUTO_INCREMENT=(?<autoIncrement>\d+))?\s*';
         $pattern .= '(?:DEFAULT CHARSET=(?<defaultCharset>[^;\s]+))?\s*)';
