@@ -10,6 +10,11 @@ class Table
     private $name;
 
     /**
+     * @var bool
+     */
+    private $ifNotExists;
+
+    /**
      * @var string
      */
     private $definition;
@@ -68,6 +73,22 @@ class Table
     public function getName()
     {
         return $this->name;
+    }
+
+    /**
+     * @return bool
+     */
+    public function isIfNotExists()
+    {
+        return $this->ifNotExists;
+    }
+
+    /**
+     * @param bool $ifNotExists
+     */
+    public function setIfNotExists($ifNotExists)
+    {
+        $this->ifNotExists = $ifNotExists;
     }
 
     /**
@@ -324,7 +345,13 @@ class Table
 
         $primaryKeys = [];
         foreach ($this->primaryKeys as $primaryKeyColumn) {
-            $primaryKeys[] = sprintf('`%s`', $primaryKeyColumn->getName());
+            if ($primaryKeyColumn->getPrimaryKeyLength()) {
+                $primaryKey = sprintf('`%s`(%s)', $primaryKeyColumn->getName(), $primaryKeyColumn->getPrimaryKeyLength());
+            } else {
+                $primaryKey = sprintf('`%s`', $primaryKeyColumn->getName());
+            }
+            
+            $primaryKeys[] = $primaryKey;
         }
 
         return sprintf('PRIMARY KEY (%s)', implode(',', $primaryKeys));
@@ -369,6 +396,12 @@ class Table
 
         $tableOptions = [];
 
+        if ($this->ifNotExists) {
+            $ifNotExists = ' IF NOT EXISTS';
+        } else {
+            $ifNotExists = '';
+        }
+
         if ($this->engine) {
             $tableOptions[] = sprintf('ENGINE=%s', $this->engine);
         }
@@ -387,6 +420,6 @@ class Table
             $implodedTableOptions = ' ' . $implodedTableOptions;
         }
 
-        return trim(sprintf('CREATE TABLE `%s` (%s  %s%s)%s;', $this->name, PHP_EOL, implode(',' . PHP_EOL . '  ', $tableDefinitions), PHP_EOL, $implodedTableOptions));
+        return trim(sprintf('CREATE TABLE%s `%s` (%s  %s%s)%s;', $ifNotExists, $this->name, PHP_EOL, implode(',' . PHP_EOL . '  ', $tableDefinitions), PHP_EOL, $implodedTableOptions));
     }
 }

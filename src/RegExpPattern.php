@@ -31,7 +31,7 @@ class RegExpPattern
      */
     public static function tables()
     {
-        $pattern = '/(?<creationScript>CREATE\s+TABLE\s+`(?<tableName>\S+)`\s+';
+        $pattern = '/(?<creationScript>CREATE\s+TABLE\s+(?<ifNotExists>IF NOT EXISTS)?\s*`(?<tableName>\S+)`\s+';
         $pattern .= '\((?<tableDefinition>[^;\/]+)\)';
         $pattern .= '(?:\s+ENGINE=(?<engine>[^;\s]+))?\s*';
         $pattern .= '(?:AUTO_INCREMENT=(?<autoIncrement>\d+))?\s*';
@@ -77,7 +77,7 @@ class RegExpPattern
      */
     public static function primaryKey()
     {
-        return '/PRIMARY KEY \((?<primaryKey>.+?)\)/';
+        return '/PRIMARY KEY \((?<primaryKey>(?:`[^`]+`\s*(?:\(\d+\))?,?)+)\)/';
     }
 
     /**

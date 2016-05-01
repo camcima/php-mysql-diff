@@ -65,6 +65,11 @@ class Column
     private $primaryKey;
 
     /**
+     * @var int
+     */
+    private $primaryKeyLength;
+
+    /**
      * @var string
      */
     private $defaultValue;
@@ -284,6 +289,22 @@ class Column
     public function setPrimaryKey($primaryKey)
     {
         $this->primaryKey = $primaryKey;
+    }
+
+    /**
+     * @return int
+     */
+    public function getPrimaryKeyLength()
+    {
+        return $this->primaryKeyLength;
+    }
+
+    /**
+     * @param int $primaryKeyLength
+     */
+    public function setPrimaryKeyLength($primaryKeyLength)
+    {
+        $this->primaryKeyLength = $primaryKeyLength;
     }
 
     /**

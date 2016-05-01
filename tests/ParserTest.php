@@ -286,4 +286,20 @@ class ParserTest extends AbstractTest
         $this->assertEquals('double unsigned', $database->getTableByName('jos_finder_links')->getColumnByName('list_price')->getColumnType());
         $this->assertEquals('double', $database->getTableByName('jos_finder_links')->getColumnByName('list_price')->getDataType());
     }
+
+    public function testIsParsingPrimaryKeyLength()
+    {
+        $creationScript = $this->getDatabaseFixture('jos_extwebdav_properties.sql');
+
+        $parser = new Parser();
+
+        $database = $parser->parseDatabase($creationScript);
+
+        $this->assertInstanceOf(Database::class, $database);
+        $this->assertCount(1, $database->getTables());
+        $this->assertCount(4, $database->getTableByName('jos_extwebdav_properties')->getColumns());
+        $this->assertCount(3, $database->getTableByName('jos_extwebdav_properties')->getPrimaryKeys());
+
+        $this->assertEquals($creationScript, $database->getTableByName('jos_extwebdav_properties')->generateCreationScript());
+    }
 }

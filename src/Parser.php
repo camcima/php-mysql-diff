@@ -43,6 +43,7 @@ class Parser
         $tables = [];
         for ($i = 0; $i < count($matches[0]); $i++) {
             $name = $matches['tableName'][$i];
+            $ifNotExists = $matches['ifNotExists'][$i];
             $definition = $matches['tableDefinition'][$i];
             $creationScript = $matches['creationScript'][$i];
             $engine = $matches['engine'][$i];
@@ -52,6 +53,10 @@ class Parser
             $table = new Table($name);
             $table->setDefinition(trim($definition));
             $table->setCreationScript(trim($creationScript) . ';');
+
+            if ($ifNotExists) {
+                $table->setIfNotExists(true);
+            }
 
             if ($engine) {
                 $table->setEngine($engine);
@@ -171,8 +176,20 @@ class Parser
         $primaryKeyNames = explode(',', str_replace('`', '', $matches['primaryKey']));
 
         foreach ($primaryKeyNames as $primaryKeyName) {
-            $primaryKeyColumn = $table->getColumnByName(trim($primaryKeyName));
+            if (preg_match('/^(?<columnName>[^\(]+)\((?<keyLength>\d+)\)/', $primaryKeyName, $keyMatches)) {
+                $columnName = $keyMatches['columnName'];
+                $keyLength = $keyMatches['keyLength'];
+            } else {
+                $columnName = $primaryKeyName;
+                $keyLength = null;
+            }
+            $primaryKeyColumn = $table->getColumnByName(trim($columnName));
             $primaryKeyColumn->setPrimaryKey(true);
+
+            if ($keyLength) {
+                $primaryKeyColumn->setPrimaryKeyLength($keyLength);
+            }
+
             $table->addPrimaryKey($primaryKeyColumn);
         }
     }
