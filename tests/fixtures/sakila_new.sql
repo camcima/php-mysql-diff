@@ -583,7 +583,7 @@ DROP TABLE IF EXISTS `test`;
 /*!40101 SET character_set_client = utf8 */;
 CREATE TABLE `test` (
   `test1` int(10) DEFAULT NULL
-) ENGINE=InnoDB DEFAULT CHARSET=utf8;
+) ENGINE=InnoDB DEFAULT CHARSET=utf8 COMMENT 'table''s comment';
 /*!40101 SET character_set_client = @saved_cs_client */;
 
 --

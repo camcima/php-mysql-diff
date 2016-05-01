@@ -60,6 +60,11 @@ class Table
     private $defaultCharset;
 
     /**
+     * @var string
+     */
+    private $comment;
+
+    /**
      * @param string $name
      */
     public function __construct($name)
@@ -337,6 +342,22 @@ class Table
     /**
      * @return string
      */
+    public function getComment()
+    {
+        return $this->comment;
+    }
+
+    /**
+     * @param string $comment
+     */
+    public function setComment($comment)
+    {
+        $this->comment = $comment;
+    }
+
+    /**
+     * @return string
+     */
     public function generatePrimaryKeyCreationScript()
     {
         if (empty($this->primaryKeys)) {
@@ -413,6 +434,10 @@ class Table
 
         if ($this->defaultCharset) {
             $tableOptions[] = sprintf('DEFAULT CHARSET=%s', $this->defaultCharset);
+        }
+
+        if ($this->comment) {
+            $tableOptions[] = sprintf('COMMENT \'%s\'', str_replace('\'','\'\'', $this->comment));
         }
 
         $implodedTableOptions = implode(' ', $tableOptions);

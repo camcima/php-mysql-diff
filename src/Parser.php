@@ -49,6 +49,7 @@ class Parser
             $engine = $matches['engine'][$i];
             $autoIncrement = $matches['autoIncrement'][$i];
             $defaultCharset = $matches['defaultCharset'][$i];
+            $comment = $matches['comment'][$i];
 
             $table = new Table($name);
             $table->setDefinition(trim($definition));
@@ -68,6 +69,10 @@ class Parser
 
             if ($defaultCharset) {
                 $table->setDefaultCharset($defaultCharset);
+            }
+
+            if ($comment) {
+                $table->setComment(str_replace('\'\'', '\'', $comment));
             }
 
             $tables[$name] = $table;

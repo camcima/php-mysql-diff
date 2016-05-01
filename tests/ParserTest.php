@@ -252,6 +252,16 @@ class ParserTest extends AbstractTest
         $this->assertCount(19, $database->getTables());
     }
 
+    public function testIsParsingTableComment()
+    {
+        $parser = new Parser();
+
+        $database = $parser->parseDatabase($this->getDatabaseFixture('sakila.sql'));
+
+        $this->assertInstanceOf(Database::class, $database);
+        $this->assertEquals('table\'s comment', $database->getTableByName('test')->getComment());
+    }
+
     public function testIsGeneratingTableCreationScript()
     {
         $parser = new Parser();

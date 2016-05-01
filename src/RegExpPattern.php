@@ -41,6 +41,8 @@ class RegExpPattern
         $pattern .= '(?:DEFAULT CHARSET=(?<defaultCharset>[^;\s]+))?\s*';
         $pattern .= '|';
         $pattern .= '(?:COLLATE=.+?)?\s*';
+        $pattern .= '|';
+        $pattern .= '(?:COMMENT \'(?<comment>([^\']|\'\')+)\')?\s*';
         $pattern .= ')*';
         $pattern .= ')(?:\/\*.+?\*\/)?\s*';
         $pattern .= ';/';
