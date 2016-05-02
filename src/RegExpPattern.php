@@ -42,7 +42,7 @@ class RegExpPattern
         $pattern .= '|';
         $pattern .= '(?:COLLATE=.+?)?\s*';
         $pattern .= '|';
-        $pattern .= '(?:COMMENT \'(?<comment>([^\']|\'\')+)\')?\s*';
+        $pattern .= '(?:COMMENT=\'(?<comment>([^\']|\'\')+)\')?\s*';
         $pattern .= ')*';
         $pattern .= ')(?:\/\*.+?\*\/)?\s*';
         $pattern .= ';/';

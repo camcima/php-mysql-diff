@@ -437,7 +437,7 @@ class Table
         }
 
         if ($this->comment) {
-            $tableOptions[] = sprintf('COMMENT \'%s\'', str_replace('\'','\'\'', $this->comment));
+            $tableOptions[] = sprintf('COMMENT=\'%s\'', str_replace('\'','\'\'', $this->comment));
         }
 
         $implodedTableOptions = implode(' ', $tableOptions);
