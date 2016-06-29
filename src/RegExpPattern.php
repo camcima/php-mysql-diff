@@ -34,19 +34,19 @@ class RegExpPattern
         $pattern = '/(?<creationScript>CREATE\s+TABLE\s+(?<ifNotExists>IF NOT EXISTS)?\s*`(?<tableName>\S+)`\s+';
         $pattern .= '\((?<tableDefinition>[^\/]+)\)';
         $pattern .= '(';
-        $pattern .= '(?:\s+ENGINE=(?<engine>[^;\s]+))?\s*';
+        $pattern .= '(?:\s+ENGINE\s*=\s*(?<engine>[^;\s]+))?\s*';
         $pattern .= '|';
-        $pattern .= '(?:AUTO_INCREMENT=(?<autoIncrement>\d+))?\s*';
+        $pattern .= '(?:AUTO_INCREMENT\s*=\s*(?<autoIncrement>\d+))?\s*';
         $pattern .= '|';
-        $pattern .= '(?:DEFAULT CHARSET=(?<defaultCharset>[^;\s]+))?\s*';
+        $pattern .= '(?:DEFAULT CHARSET\s*=\s*(?<defaultCharset>[^;\s]+))?\s*';
         $pattern .= '|';
-        $pattern .= '(?:COLLATE=.+?)?\s*';
+        $pattern .= '(?:COLLATE\s*=\s*.+?)?\s*';
         $pattern .= '|';
-        $pattern .= '(?:COMMENT=\'(?<comment>([^\']|\'\')+)\')?\s*';
+        $pattern .= '(?:COMMENT\s*=\s*\'(?<comment>([^\']|\'\')+)\')?\s*';
         $pattern .= ')*';
         $pattern .= ')(?:\/\*.+?\*\/)?\s*';
         $pattern .= ';/';
-        $pattern .= 's'; // modifier
+        $pattern .= 'si'; // modifier
 
         return $pattern;
     }
@@ -67,6 +67,7 @@ class RegExpPattern
         $pattern .= '(?:ON UPDATE (?<onUpdateValue>\S+))?\s*';
         $pattern .= '(?:COMMENT \'(?<comment>([^\']|\'\')+)\')?\s*';
         $pattern .= '(?:,|$)/';
+        $pattern .= 'i'; // modifier
 
         return $pattern;
     }
@@ -76,7 +77,7 @@ class RegExpPattern
      */
     public static function dataType()
     {
-        return '/(?<dataType>[^\(\s]+)\s*(?:\([^\)]+\))?\s*(?<unsigned>unsigned)?/';
+        return '/(?<dataType>[^\(\s]+)\s*(?:\([^\)]+\))?\s*(?<unsigned>unsigned)?/i';
     }
 
     /**
@@ -84,7 +85,7 @@ class RegExpPattern
      */
     public static function primaryKey()
     {
-        return '/PRIMARY KEY \((?<primaryKey>(?:`[^`]+`\s*(?:\(\d+\))?,?)+)\)/';
+        return '/PRIMARY KEY \((?<primaryKey>(?:`[^`]+`\s*(?:\(\d+\))?,?)+)\)/i';
     }
 
     /**
@@ -99,6 +100,7 @@ class RegExpPattern
         $pattern .= '(?<onDelete>ON DELETE .+?)?\s*';
         $pattern .= '(?<onUpdate>ON UPDATE .+?)?\s*';
         $pattern .= '(?:,|$)/';
+        $pattern .= 'i'; // modifier
 
         return $pattern;
     }
@@ -116,6 +118,7 @@ class RegExpPattern
         $pattern .= '\((?<columns>(?:`[^`]+`(?:\(\d+\))?,?)+)\)\s*';
         $pattern .= '(?<options>[^,]+?)?\s*';
         $pattern .= '(?:,|$)/';
+        $pattern .= 'i'; // modifier
 
         return $pattern;
     }
@@ -127,6 +130,7 @@ class RegExpPattern
     {
         $pattern = '/^(?<columnName>[^\(]+)\s*';
         $pattern .= '(?:\((?<firstCharacters>\d+)\))?$/';
+        $pattern .= 'i'; // modifier
 
         return $pattern;
     }

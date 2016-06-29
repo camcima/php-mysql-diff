@@ -333,4 +333,22 @@ class ParserTest extends AbstractTest
         $this->assertEquals('`sha1_hash` varchar(50) NOT NULL DEFAULT \'\' COMMENT \'SHA1 hash of the version\'\'s data column.\'', $database->getTableByName('jos_ucm_history')->getColumnByName('sha1_hash')->generateCreationScript());
         $this->assertEquals('0=auto delete; 1=keep', $database->getTableByName('jos_ucm_history')->getColumnByName('keep_forever')->getComment());
     }
+
+    public function testIsParsingCaseInsensitiveAndSpaces()
+    {
+        $creationScript = $this->getDatabaseFixture('jeff.sql');
+
+        $parser = new Parser();
+
+        $database = $parser->parseDatabase($creationScript);
+
+        $this->assertInstanceOf(Database::class, $database);
+        $this->assertCount(1, $database->getTables());
+        $this->assertCount(1, $database->getTableByName('contact')->getColumns());
+        $this->assertCount(0, $database->getTableByName('contact')->getPrimaryKeys());
+        $this->assertCount(0, $database->getTableByName('contact')->getIndexes());
+        $this->assertNull($database->getTableByName('contact')->getDefaultCharset());
+        $this->assertEquals('InnoDB', $database->getTableByName('contact')->getEngine());
+        $this->assertEquals('`id` BIGINT UNSIGNED NOT NULL AUTO_INCREMENT', $database->getTableByName('contact')->getColumnByName('id')->generateCreationScript());
+    }
 }
