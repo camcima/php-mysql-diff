@@ -29,13 +29,13 @@ class MigrateCommand extends AbstractCommand
             ->addOption(
                 'output',
                 'o',
-                InputOption::VALUE_OPTIONAL,
+                InputOption::VALUE_REQUIRED,
                 'Output migration script to a file'
             )
             ->addOption(
                 'ignore',
                 'i',
-                InputOption::VALUE_OPTIONAL,
+                InputOption::VALUE_REQUIRED,
                 'Table ignore list'
             )
         ;
