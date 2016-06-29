@@ -38,6 +38,12 @@ class MigrateCommand extends AbstractCommand
                 InputOption::VALUE_REQUIRED,
                 'Table ignore list'
             )
+            ->addOption(
+                'progress',
+                'p',
+                InputOption::VALUE_NONE,
+                'Display migration progress'
+            )
         ;
     }
 
@@ -101,7 +107,7 @@ class MigrateCommand extends AbstractCommand
         }
 
         $this->outputString('• Generating migration script ...');
-        $migrationScript = $differ->generateMigrationScript($databaseDiff);
+        $migrationScript = $differ->generateMigrationScript($databaseDiff, (bool) $input->getOption('progress'));
         $this->outputLine(' <info>✓</info>');
 
         if ($this->verbose) {

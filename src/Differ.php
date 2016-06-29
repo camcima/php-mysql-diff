@@ -206,10 +206,11 @@ class Differ
 
     /**
      * @param DatabaseDiff $databaseDiff
+     * @param bool $displayProgress
      *
      * @return string
      */
-    public function generateMigrationScript(DatabaseDiff $databaseDiff)
+    public function generateMigrationScript(DatabaseDiff $databaseDiff, $displayProgress = false)
     {
         $migrationScript = '';
         $migrationScript .= '# Disable Foreign Keys Check' . PHP_EOL;
@@ -219,18 +220,33 @@ class Differ
         $migrationScript .= PHP_EOL . '# Deleted Tables' . PHP_EOL;
         foreach ($databaseDiff->getDeletedTables() as $deletedTable) {
             $migrationScript .= PHP_EOL . sprintf('-- deleted table `%s`' . PHP_EOL . PHP_EOL, $deletedTable->getName());
+
+            if ($displayProgress) {
+                $migrationScript .= sprintf("SELECT 'Dropping table %s';" . PHP_EOL, $deletedTable->getName());
+            }
+
             $migrationScript .= sprintf('DROP TABLE `%s`;' . PHP_EOL, $deletedTable->getName());
         }
 
         $migrationScript .= PHP_EOL . '# Changed Tables' . PHP_EOL;
         foreach ($databaseDiff->getChangedTables() as $changedTable) {
             $migrationScript .= PHP_EOL . sprintf('-- changed table `%s`' . PHP_EOL . PHP_EOL, $changedTable->getName());
+
+            if ($displayProgress) {
+                $migrationScript .= sprintf("SELECT 'Altering table %s';" . PHP_EOL, $changedTable->getName());
+            }
+
             $migrationScript .= $changedTable->generateAlterScript() . PHP_EOL;
         }
 
         $migrationScript .= PHP_EOL . '# New Tables' . PHP_EOL;
         foreach ($databaseDiff->getNewTables() as $newTable) {
             $migrationScript .= PHP_EOL . sprintf('-- new table `%s`' . PHP_EOL . PHP_EOL, $newTable->getName());
+
+            if ($displayProgress) {
+                $migrationScript .= sprintf("SELECT 'Creating table %s';" . PHP_EOL, $newTable->getName());
+            }
+
             $migrationScript .= $newTable->generateCreationScript(true) . PHP_EOL;
         }
 
