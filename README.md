@@ -113,7 +113,7 @@ Diff completed!
 ### Migration Script
 
 ```
-$ php-mysql-diff migrate <from> <to> [-o <output-file>] [-i <ignore-tables-file>]
+$ php-mysql-diff migrate <from> <to> [-o <output-file>] [-i <ignore-tables-file>] [-p]
 ```
 
 where `from` is the path to the initial database creation script and `to` is the path to the target database creation script.
@@ -190,6 +190,10 @@ CREATE TABLE `test3` (
 # Disable Foreign Keys Check
 SET FOREIGN_KEY_CHECKS = 1;
 ```
+
+**Display Progress**
+
+For long running migrations, it is recommended to use the `-p` option to display the progress of the running migration.
 
 ## Contribute
 
