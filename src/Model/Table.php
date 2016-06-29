@@ -32,7 +32,7 @@ class Table
     /**
      * @var Column[]
      */
-    private $primaryKeys;
+    private $primaryKeys = [];
 
     /**
      * @var ForeignKey[]

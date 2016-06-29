@@ -7,7 +7,7 @@ class Database
     /**
      * @var Table[]
      */
-    private $tables;
+    private $tables = [];
 
     /**
      * @return Table[]
