@@ -2,6 +2,11 @@
 
 namespace Camcima\MySqlDiff\Model;
 
+/**
+ * Class Table
+ *
+ * @package Camcima\MySqlDiff\Model
+ */
 class Table
 {
     /**
@@ -48,6 +53,16 @@ class Table
      * @var string
      */
     private $engine;
+
+    /**
+     * @var string
+     */
+    private $rowFormat;
+
+    /**
+     * @var string
+     */
+    private $keyBlockSize;
 
     /**
      * @var int
@@ -155,13 +170,13 @@ class Table
 
     /**
      * @param string $columnName
-     *
      * @return Column
+     * @throws \RuntimeException
      */
     public function getColumnByName($columnName)
     {
         if (!isset($this->columns[$columnName])) {
-            throw new \RuntimeException(sprintf('Column "%s" not found in table ""!', $columnName, $this->name));
+            throw new \RuntimeException(sprintf('Column "%s" not found in table "%s"!', $columnName, $this->name));
         }
 
         return $this->columns[$columnName];
@@ -169,18 +184,18 @@ class Table
 
     /**
      * @param int $columnOrder
-     *
      * @return Column
+     * @throws \RuntimeException
      */
     public function getColumnByOrder($columnOrder)
     {
         foreach ($this->columns as $column) {
-            if ($column->getOrder() == $columnOrder) {
+            if ($column->getOrder() === $columnOrder) {
                 return $column;
             }
         }
 
-        throw new \RuntimeException(sprintf('Column order "%s" not found in table ""!', $columnOrder, $this->name));
+        throw new \RuntimeException(sprintf('Column order "%s" not found in table "%s"!', $columnOrder, $this->name));
     }
 
     /**
@@ -228,13 +243,13 @@ class Table
 
     /**
      * @param string $foreignKeyName
-     *
      * @return ForeignKey
+     * @throws \RuntimeException
      */
     public function getForeignKeyByName($foreignKeyName)
     {
         if (!isset($this->foreignKeys[$foreignKeyName])) {
-            throw new \RuntimeException(sprintf('Foreign key "%s" not found in table ""!', $foreignKeyName, $this->name));
+            throw new \RuntimeException(sprintf('Foreign key "%s" not found in table "%s"!', $foreignKeyName, $this->name));
         }
 
         return $this->foreignKeys[$foreignKeyName];
@@ -269,13 +284,13 @@ class Table
 
     /**
      * @param string $indexName
-     *
      * @return Index
+     * @throws \RuntimeException
      */
     public function getIndexByName($indexName)
     {
         if (!isset($this->indexes[$indexName])) {
-            throw new \RuntimeException(sprintf('Index "%s" not found in table ""!', $indexName, $this->name));
+            throw new \RuntimeException(sprintf('Index "%s" not found in table "%s"!', $indexName, $this->name));
         }
 
         return $this->indexes[$indexName];
@@ -305,6 +320,38 @@ class Table
     public function setEngine($engine)
     {
         $this->engine = $engine;
+    }
+
+    /**
+     * @return string
+     */
+    public function getRowFormat()
+    {
+        return $this->rowFormat;
+    }
+
+    /**
+     * @param string $rowFormat
+     */
+    public function setRowFormat($rowFormat)
+    {
+        $this->rowFormat = $rowFormat;
+    }
+
+    /**
+     * @return string
+     */
+    public function getKeyBlockSize()
+    {
+        return $this->keyBlockSize;
+    }
+
+    /**
+     * @param string $keyBlockSize
+     */
+    public function setKeyBlockSize($keyBlockSize)
+    {
+        $this->keyBlockSize = $keyBlockSize;
     }
 
     /**
@@ -434,6 +481,14 @@ class Table
 
         if ($this->defaultCharset) {
             $tableOptions[] = sprintf('DEFAULT CHARSET=%s', $this->defaultCharset);
+        }
+
+        if ($this->rowFormat) {
+            $tableOptions[] = sprintf('ROW_FORMAT=%s', $this->rowFormat);
+        }
+
+        if ($this->keyBlockSize) {
+            $tableOptions[] = sprintf('KEY_BLOCK_SIZE=%s', $this->keyBlockSize);
         }
 
         if ($this->comment) {

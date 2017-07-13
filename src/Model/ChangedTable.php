@@ -2,6 +2,11 @@
 
 namespace Camcima\MySqlDiff\Model;
 
+/**
+ * Class ChangedTable
+ *
+ * @package Camcima\MySqlDiff\Model
+ */
 class ChangedTable
 {
     /**
@@ -365,6 +370,26 @@ class ChangedTable
 
         foreach ($this->newForeignKeys as $newForeignKey) {
             $tableChanges[] = sprintf('ADD %s', $newForeignKey->generateCreationScript());
+        }
+
+        if ($this->fromTable->getEngine() !== $this->toTable->getEngine()) {
+            $tableChanges[] = sprintf('ENGINE=%s', $this->toTable->getEngine());
+        }
+
+        if ($this->fromTable->getDefaultCharset() !== $this->toTable->getDefaultCharset()) {
+            $tableChanges[] = sprintf('DEFAULT CHARSET=%s', $this->toTable->getDefaultCharset());
+        }
+
+        if ($this->fromTable->getRowFormat() !== $this->toTable->getRowFormat()) {
+            $tableChanges[] = sprintf('ROW_FORMAT=%s', $this->toTable->getRowFormat());
+        }
+
+        if ($this->fromTable->getKeyBlockSize() !== $this->toTable->getKeyBlockSize()) {
+            $tableChanges[] = sprintf('KEY_BLOCK_SIZE=%s', $this->toTable->getKeyBlockSize());
+        }
+
+        if ($this->fromTable->getComment() !== $this->toTable->getComment()) {
+            $tableChanges[] = sprintf('COMMENT=\'%s\'', str_replace('\'','\'\'', $this->toTable->getComment()));
         }
 
         $alterScript = sprintf('ALTER TABLE `%s`%s  %s;', $this->getName(), PHP_EOL, implode(',' . PHP_EOL . '  ', $tableChanges));

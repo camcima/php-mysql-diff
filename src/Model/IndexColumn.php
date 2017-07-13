@@ -2,6 +2,11 @@
 
 namespace Camcima\MySqlDiff\Model;
 
+/**
+ * Class IndexColumn
+ *
+ * @package Camcima\MySqlDiff\Model
+ */
 class IndexColumn
 {
     /**
