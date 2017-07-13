@@ -170,7 +170,7 @@ DROP TABLE IF EXISTS `customer_list`;
 /*!50001 DROP VIEW IF EXISTS `customer_list`*/;
 SET @saved_cs_client     = @@character_set_client;
 SET character_set_client = utf8;
-/*!50001 CREATE VIEW `customer_list` AS SELECT 
+/*!50001 CREATE VIEW `customer_list` AS SELECT
  1 AS `ID`,
  1 AS `name`,
  1 AS `address`,
@@ -315,7 +315,7 @@ DROP TABLE IF EXISTS `film_list`;
 /*!50001 DROP VIEW IF EXISTS `film_list`*/;
 SET @saved_cs_client     = @@character_set_client;
 SET character_set_client = utf8;
-/*!50001 CREATE VIEW `film_list` AS SELECT 
+/*!50001 CREATE VIEW `film_list` AS SELECT
  1 AS `FID`,
  1 AS `title`,
  1 AS `description`,
@@ -385,7 +385,7 @@ DROP TABLE IF EXISTS `nicer_but_slower_film_list`;
 /*!50001 DROP VIEW IF EXISTS `nicer_but_slower_film_list`*/;
 SET @saved_cs_client     = @@character_set_client;
 SET character_set_client = utf8;
-/*!50001 CREATE VIEW `nicer_but_slower_film_list` AS SELECT 
+/*!50001 CREATE VIEW `nicer_but_slower_film_list` AS SELECT
  1 AS `FID`,
  1 AS `title`,
  1 AS `description`,
@@ -489,7 +489,7 @@ DROP TABLE IF EXISTS `sales_by_film_category`;
 /*!50001 DROP VIEW IF EXISTS `sales_by_film_category`*/;
 SET @saved_cs_client     = @@character_set_client;
 SET character_set_client = utf8;
-/*!50001 CREATE VIEW `sales_by_film_category` AS SELECT 
+/*!50001 CREATE VIEW `sales_by_film_category` AS SELECT
  1 AS `category`,
  1 AS `total_sales`*/;
 SET character_set_client = @saved_cs_client;
@@ -502,7 +502,7 @@ DROP TABLE IF EXISTS `sales_by_store`;
 /*!50001 DROP VIEW IF EXISTS `sales_by_store`*/;
 SET @saved_cs_client     = @@character_set_client;
 SET character_set_client = utf8;
-/*!50001 CREATE VIEW `sales_by_store` AS SELECT 
+/*!50001 CREATE VIEW `sales_by_store` AS SELECT
  1 AS `store`,
  1 AS `manager`,
  1 AS `total_sales`*/;
@@ -543,7 +543,7 @@ DROP TABLE IF EXISTS `staff_list`;
 /*!50001 DROP VIEW IF EXISTS `staff_list`*/;
 SET @saved_cs_client     = @@character_set_client;
 SET character_set_client = utf8;
-/*!50001 CREATE VIEW `staff_list` AS SELECT 
+/*!50001 CREATE VIEW `staff_list` AS SELECT
  1 AS `ID`,
  1 AS `name`,
  1 AS `address`,
@@ -605,7 +605,7 @@ CREATE TABLE `test2` (
   UNIQUE KEY `FK__test1` (`datade`),
   CONSTRAINT `FK__test3` FOREIGN KEY (`id`) REFERENCES `test` (`test1`)
   CONSTRAINT `FK__test3` FOREIGN KEY (`fk`) REFERENCES `test3` (`id`)
-) ENGINE=InnoDB AUTO_INCREMENT=3 DEFAULT CHARSET=utf8;
+) ENGINE=InnoDB AUTO_INCREMENT=3 DEFAULT CHARSET=utf8 ROW_FORMAT=COMPRESSED KEY_BLOCK_SIZE=4 COMMENT='test1';
 /*!40101 SET character_set_client = @saved_cs_client */;
 
 --
