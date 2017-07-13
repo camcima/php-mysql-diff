@@ -252,7 +252,6 @@ class Differ
 
         $migrationScript[] = '';
         $migrationScript[] = '# Changed Tables';
-        $migrationScript[] = '';
         foreach ($databaseDiff->getChangedTables() as $changedTable) {
             $migrationScript[] = '';
             $migrationScript[] = sprintf('-- changed table `%s`', $changedTable->getName());
@@ -266,7 +265,6 @@ class Differ
         }
         $migrationScript[] = '';
         $migrationScript[] = '# New Tables';
-        $migrationScript[] = '';
 
         foreach ($databaseDiff->getNewTables() as $newTable) {
             $migrationScript[] = '';
@@ -282,8 +280,8 @@ class Differ
 
         $migrationScript[] = '';
         $migrationScript[] = '# Disable Foreign Keys Check';
-        $migrationScript[] = '';
         $migrationScript[] = 'SET FOREIGN_KEY_CHECKS = 1;';
+        $migrationScript[] = '';
 
         return $migrationScript;
     }
