@@ -5,6 +5,11 @@ namespace Camcima\MySqlDiff\Command;
 use Symfony\Component\Console\Command\Command;
 use Symfony\Component\Console\Output\OutputInterface;
 
+/**
+ * Class AbstractCommand
+ *
+ * @package Camcima\MySqlDiff\Command
+ */
 abstract class AbstractCommand extends Command
 {
     /**
@@ -30,11 +35,11 @@ abstract class AbstractCommand extends Command
 
     /**
      * @param string $string
-     * @param bool $forceOuput
+     * @param bool $forceOutput
      */
-    protected function outputString($string = '', $forceOuput = false)
+    protected function outputString($string = '', $forceOutput = false)
     {
-        if ($this->verbose || $forceOuput) {
+        if ($this->verbose || $forceOutput) {
             $this->output->write($string);
         }
     }

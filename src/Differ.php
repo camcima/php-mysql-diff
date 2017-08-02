@@ -7,6 +7,11 @@ use Camcima\MySqlDiff\Model\Column;
 use Camcima\MySqlDiff\Model\Database;
 use Camcima\MySqlDiff\Model\DatabaseDiff;
 
+/**
+ * Class Differ
+ *
+ * @package Camcima\MySqlDiff
+ */
 class Differ
 {
     /**
@@ -32,7 +37,8 @@ class Differ
             }
 
             $toTable = $toDatabase->getTableByName($fromTable->getName());
-            if ($fromTable->generateCreationScript(true) != $toTable->generateCreationScript(true)) {
+
+            if ($fromTable->generateCreationScript(true) !== $toTable->generateCreationScript(true)) {
                 $changedTable = new ChangedTable($fromTable, $toTable);
                 $this->diffChangedTable($changedTable);
                 $databaseDiff->addChangedTable($changedTable);
@@ -89,18 +95,19 @@ class Differ
 
             // Determine changed columns
             $fromColumn = $fromTable->getColumnByName($toColumn->getName());
-            if ($toColumn->generateCreationScript() != $fromColumn->generateCreationScript()) {
+            if ($toColumn->generateCreationScript() !== $fromColumn->generateCreationScript()) {
                 $changedTable->addChangedColumn($toColumn);
                 continue;
             }
 
             if (!$fromColumn->getPreviousColumn() && !$toColumn->getPreviousColumn()) {
                 continue;
-            } elseif (!$fromColumn->getPreviousColumn() && $toColumn->getPreviousColumn() instanceof Column) {
+            }
+            if (!$fromColumn->getPreviousColumn() && $toColumn->getPreviousColumn() instanceof Column) {
                 $this->addChangedColumn($changedTable, $toColumn);
             } elseif ($fromColumn->getPreviousColumn() instanceof Column && !$toColumn->getPreviousColumn()) {
                 $this->addChangedColumn($changedTable, $toColumn);
-            } elseif ($fromColumn->getPreviousColumn()->getName() != $toColumn->getPreviousColumn()->getName()) {
+            } elseif ($fromColumn->getPreviousColumn()->getName() !== $toColumn->getPreviousColumn()->getName()) {
                 $this->addChangedColumn($changedTable, $toColumn);
             }
         }
@@ -137,7 +144,7 @@ class Differ
             return;
         }
 
-        if ($fromTable->generatePrimaryKeyCreationScript() != $toTable->generatePrimaryKeyCreationScript()) {
+        if ($fromTable->generatePrimaryKeyCreationScript() !== $toTable->generatePrimaryKeyCreationScript()) {
             $changedTable->setChangedPrimaryKeys($toTable->getPrimaryKeys());
         }
     }
@@ -167,7 +174,7 @@ class Differ
 
             // Determine changed indexes
             $fromIndex = $fromTable->getIndexByName($toIndex->getName());
-            if ($toIndex->generateCreationScript() != $fromIndex->generateCreationScript()) {
+            if ($toIndex->generateCreationScript() !== $fromIndex->generateCreationScript()) {
                 $changedTable->addChangedIndex($toIndex);
             }
         }
@@ -198,7 +205,7 @@ class Differ
 
             // Determine changed foreign keys
             $fromForeignKey = $fromTable->getForeignKeyByName($toForeignKey->getName());
-            if ($toForeignKey->generateCreationScript() != $fromForeignKey->generateCreationScript()) {
+            if ($toForeignKey->generateCreationScript() !== $fromForeignKey->generateCreationScript()) {
                 $changedTable->addChangedForeignKey($toForeignKey);
             }
         }
@@ -212,46 +219,69 @@ class Differ
      */
     public function generateMigrationScript(DatabaseDiff $databaseDiff, $displayProgress = false)
     {
-        $migrationScript = '';
-        $migrationScript .= '# Disable Foreign Keys Check' . PHP_EOL;
-        $migrationScript .= 'SET FOREIGN_KEY_CHECKS = 0;' . PHP_EOL;
-        $migrationScript .= 'SET SQL_MODE = \'\';' . PHP_EOL;
+        return implode(PHP_EOL, $this->generateMigrationScriptArray($databaseDiff, $displayProgress));
+    }
 
-        $migrationScript .= PHP_EOL . '# Deleted Tables' . PHP_EOL;
+    /**
+     * @param DatabaseDiff $databaseDiff
+     * @param bool $displayProgress
+     *
+     * @return array
+     */
+    public function generateMigrationScriptArray(DatabaseDiff $databaseDiff, $displayProgress = false)
+    {
+        $migrationScript = array();
+        $migrationScript[] = '# Disable Foreign Keys Check';
+        $migrationScript[] = 'SET FOREIGN_KEY_CHECKS = 0;';
+        $migrationScript[] = 'SET SQL_MODE = \'\';';
+
+        $migrationScript[] = '';
+        $migrationScript[] = '# Deleted Tables';
         foreach ($databaseDiff->getDeletedTables() as $deletedTable) {
-            $migrationScript .= PHP_EOL . sprintf('-- deleted table `%s`' . PHP_EOL . PHP_EOL, $deletedTable->getName());
+            $migrationScript[] = '';
+            $migrationScript[] = sprintf('-- deleted table `%s`', $deletedTable->getName());
+            $migrationScript[] = '';
+
 
             if ($displayProgress) {
-                $migrationScript .= sprintf("SELECT 'Dropping table %s';" . PHP_EOL, $deletedTable->getName());
+                $migrationScript[] = sprintf("SELECT 'Dropping table %s';", $deletedTable->getName());
             }
 
-            $migrationScript .= sprintf('DROP TABLE `%s`;' . PHP_EOL, $deletedTable->getName());
+            $migrationScript[] = sprintf('DROP TABLE `%s`;', $deletedTable->getName());
         }
 
-        $migrationScript .= PHP_EOL . '# Changed Tables' . PHP_EOL;
+        $migrationScript[] = '';
+        $migrationScript[] = '# Changed Tables';
         foreach ($databaseDiff->getChangedTables() as $changedTable) {
-            $migrationScript .= PHP_EOL . sprintf('-- changed table `%s`' . PHP_EOL . PHP_EOL, $changedTable->getName());
+            $migrationScript[] = '';
+            $migrationScript[] = sprintf('-- changed table `%s`', $changedTable->getName());
+            $migrationScript[] = '';
 
             if ($displayProgress) {
-                $migrationScript .= sprintf("SELECT 'Altering table %s';" . PHP_EOL, $changedTable->getName());
+                $migrationScript[] = sprintf("SELECT 'Altering table %s';", $changedTable->getName());
             }
 
-            $migrationScript .= $changedTable->generateAlterScript() . PHP_EOL;
+            $migrationScript[] = $changedTable->generateAlterScript();
         }
+        $migrationScript[] = '';
+        $migrationScript[] = '# New Tables';
 
-        $migrationScript .= PHP_EOL . '# New Tables' . PHP_EOL;
         foreach ($databaseDiff->getNewTables() as $newTable) {
-            $migrationScript .= PHP_EOL . sprintf('-- new table `%s`' . PHP_EOL . PHP_EOL, $newTable->getName());
+            $migrationScript[] = '';
+            $migrationScript[] = sprintf('-- new table `%s`', $newTable->getName());
+            $migrationScript[] = '';
 
             if ($displayProgress) {
-                $migrationScript .= sprintf("SELECT 'Creating table %s';" . PHP_EOL, $newTable->getName());
+                $migrationScript[] = sprintf("SELECT 'Creating table %s';", $newTable->getName());
             }
 
-            $migrationScript .= $newTable->generateCreationScript(true) . PHP_EOL;
+            $migrationScript[] = $newTable->generateCreationScript(true);
         }
 
-        $migrationScript .= PHP_EOL . '# Disable Foreign Keys Check' . PHP_EOL;
-        $migrationScript .= 'SET FOREIGN_KEY_CHECKS = 1;' . PHP_EOL;
+        $migrationScript[] = '';
+        $migrationScript[] = '# Disable Foreign Keys Check';
+        $migrationScript[] = 'SET FOREIGN_KEY_CHECKS = 1;';
+        $migrationScript[] = '';
 
         return $migrationScript;
     }

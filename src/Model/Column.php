@@ -2,6 +2,11 @@
 
 namespace Camcima\MySqlDiff\Model;
 
+/**
+ * Class Column
+ *
+ * @package Camcima\MySqlDiff\Model
+ */
 class Column
 {
     /**
@@ -420,7 +425,7 @@ class Column
 
         if (!$this->nullable) {
             $columnOptions[] = 'NOT NULL';
-        } elseif ($this->columnType == 'timestamp') {
+        } elseif ($this->columnType === 'timestamp') {
             $columnOptions[] = 'NULL';
         }
 

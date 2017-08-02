@@ -3,8 +3,16 @@
 namespace Camcima\MySqlDiff;
 
 
+/**
+ * Class RegExpPattern
+ *
+ * @package Camcima\MySqlDiff
+ */
 class RegExpPattern
 {
+    /**
+     * @var array
+     */
     private static $columnTypeRegExps = [
         '(?:tiny|small|medium|big)?int(?:\((?<intLength>\d+)\))?(?:\s+unsigned)?',
         'float(?:\s+unsigned)?(?:\((?<floatLength>\d+),(?<floatPrecision>\d+)\))?',
@@ -39,6 +47,10 @@ class RegExpPattern
         $pattern .= '(?:AUTO_INCREMENT\s*=\s*(?<autoIncrement>\d+))?\s*';
         $pattern .= '|';
         $pattern .= '(?:DEFAULT CHARSET\s*=\s*(?<defaultCharset>[^;\s]+))?\s*';
+        $pattern .= '|';
+        $pattern .= '(?:\s+ROW_FORMAT\s*=\s*(?<rowFormat>[^;\s]+))?\s*';
+        $pattern .= '|';
+        $pattern .= '(?:\s+KEY_BLOCK_SIZE\s*=\s*(?<keyBlockSize>[^;\s]+))?\s*';
         $pattern .= '|';
         $pattern .= '(?:COLLATE\s*=\s*.+?)?\s*';
         $pattern .= '|';

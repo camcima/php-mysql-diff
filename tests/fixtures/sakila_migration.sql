@@ -23,7 +23,10 @@ ALTER TABLE `test2`
   ADD COLUMN `new_field` int(10) AFTER `datade`,
   ADD PRIMARY KEY (`id`,`new_field`),
   ADD UNIQUE KEY `FK__test1` (`datade`),
-  ADD CONSTRAINT `FK__test3` FOREIGN KEY (`fk`) REFERENCES `test3` (`id`);
+  ADD CONSTRAINT `FK__test3` FOREIGN KEY (`fk`) REFERENCES `test3` (`id`),
+  ROW_FORMAT=COMPRESSED,
+  KEY_BLOCK_SIZE=4,
+  COMMENT='test1';
 
 # New Tables
 
