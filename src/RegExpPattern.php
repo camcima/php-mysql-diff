@@ -18,7 +18,7 @@ class RegExpPattern
         'float(?:\s+unsigned)?(?:\((?<floatLength>\d+),(?<floatPrecision>\d+)\))?',
         'binary',
         'real',
-        'decimal\((?<decimalLength>\d+),(?<decimalPrecision>\d+)\)',
+        'decimal\((?<decimalLength>\d+),(?<decimalPrecision>\d+)\)(?:\s+unsigned)?',
         'double(?:\((?<doubleLength>\d+),(?<doublePrecision>\d+)\))?(?:\s+unsigned)?',
         'datetime',
         'date',
