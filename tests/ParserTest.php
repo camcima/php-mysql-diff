@@ -24,20 +24,8 @@ class ParserTest extends AbstractTest
         $this->assertEquals('InnoDB', $result['actor']->getEngine());
         $this->assertEquals(201, $result['actor']->getAutoIncrement());
         $this->assertEquals('utf8', $result['actor']->getDefaultCharset());
-        $this->assertEquals('CREATE TABLE `actor` (
-  `actor_id` smallint(5) unsigned NOT NULL AUTO_INCREMENT,
-  `first_name` varchar(45) NOT NULL,
-  `last_name` varchar(45) NOT NULL,
-  `last_update` timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
-  PRIMARY KEY (`actor_id`),
-  KEY `idx_actor_last_name` (`last_name`)
-) ENGINE=InnoDB AUTO_INCREMENT=201 DEFAULT CHARSET=utf8;', $result['actor']->getCreationScript());
-        $this->assertEquals('`actor_id` smallint(5) unsigned NOT NULL AUTO_INCREMENT,
-  `first_name` varchar(45) NOT NULL,
-  `last_name` varchar(45) NOT NULL,
-  `last_update` timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
-  PRIMARY KEY (`actor_id`),
-  KEY `idx_actor_last_name` (`last_name`)', $result['actor']->getDefinition());
+        $this->assertEquals($this->getDatabaseFixture('actor.sql'), $result['actor']->getCreationScript());
+        $this->assertEquals($this->getDatabaseFixture('actor_definition.sql'), $result['actor']->getDefinition());
     }
 
     public function testIsParsingColumns()
