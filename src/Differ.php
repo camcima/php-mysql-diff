@@ -38,7 +38,10 @@ class Differ
             if ($fromTable->generateCreationScript(true) !== $toTable->generateCreationScript(true)) {
                 $changedTable = new ChangedTable($fromTable, $toTable);
                 $this->diffChangedTable($changedTable);
-                $databaseDiff->addChangedTable($changedTable);
+
+                if (!empty($changedTable->generateAlterScript())) {
+                    $databaseDiff->addChangedTable($changedTable);
+                }
             }
         }
 

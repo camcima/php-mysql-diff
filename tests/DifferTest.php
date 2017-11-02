@@ -101,4 +101,17 @@ class DifferTest extends AbstractTest
 
         $this->assertEquals($this->getDatabaseFixture('sakila_migration.sql'), $result);
     }
+
+    public function testIsDiffingDeletedForeignKeyColumn()
+    {
+        $parser = new Parser();
+
+        $fromDatabase = $parser->parseDatabase($this->getDatabaseFixture('fk_deleted_column1.sql'));
+        $toDatabase = $parser->parseDatabase($this->getDatabaseFixture('fk_deleted_column2.sql'));
+
+        $differ = new Differ();
+        $databaseDiff = $differ->diffDatabases($fromDatabase, $toDatabase);
+
+        $this->assertEquals($this->getDatabaseFixture('fk_deleted_column_migration.sql'), $differ->generateMigrationScript($databaseDiff));
+    }
 }

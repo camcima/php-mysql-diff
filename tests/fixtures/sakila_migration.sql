@@ -15,7 +15,8 @@ DROP TABLE `test1`;
 ALTER TABLE `test2`
   DROP PRIMARY KEY,
   DROP FOREIGN KEY `FK__test1`,
-  DROP INDEX `FK__test1`,
+  DROP INDEX `FK__test1`;
+ALTER TABLE `test2`
   CHANGE COLUMN `id` `id` int(10) NOT NULL AUTO_INCREMENT FIRST,
   CHANGE COLUMN `fk` `fk` int(10) AFTER `id`,
   CHANGE COLUMN `val` `val` decimal(11,3) NOT NULL AFTER `fk`,
