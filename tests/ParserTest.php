@@ -359,4 +359,23 @@ class ParserTest extends AbstractTest
         $this->assertEquals('`timestamp_column` TIMESTAMP(2) NOT NULL', $database->getTableByName('fractional_seconds')->getColumnByName('timestamp_column')->generateCreationScript());
         $this->assertEquals('`time_column` TIME(3) NOT NULL', $database->getTableByName('fractional_seconds')->getColumnByName('time_column')->generateCreationScript());
     }
+
+    public function testIsParsingColumnWithBackslashInDefaultValue()
+    {
+        $creationScript = $this->getDatabaseFixture('backslash.sql');
+
+        $parser = new Parser();
+
+        $database = $parser->parseDatabase($creationScript);
+
+        $this->assertInstanceOf(Database::class, $database);
+        $this->assertCount(1, $database->getTables());
+        $this->assertCount(1, $database->getTableByName('backslash')->getColumns());
+        $this->assertCount(0, $database->getTableByName('backslash')->getPrimaryKeys());
+        $this->assertCount(0, $database->getTableByName('backslash')->getIndexes());
+        $this->assertEquals('utf8', $database->getTableByName('backslash')->getDefaultCharset());
+        $this->assertEquals('InnoDB', $database->getTableByName('backslash')->getEngine());
+        $this->assertEquals('Table/Comment', $database->getTableByName('backslash')->getComment());
+        $this->assertEquals('`time_zone` varchar(255) NOT NULL DEFAULT \'America/Los_Angeles\' COMMENT \'Column/Comment\'', $database->getTableByName('backslash')->getColumnByName('time_zone')->generateCreationScript());
+    }
 }
