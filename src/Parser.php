@@ -23,7 +23,7 @@ class Parser
     {
         $database = new Database();
 
-        $tables = $this->parseTables($sqlScript);
+        $tables = $this->parseTables($this->convertStringsToBase64($sqlScript));
 
         foreach ($tables as $table) {
             $this->parseTableDefinition($table);
@@ -48,12 +48,12 @@ class Parser
         for ($i = 0; $i < $loopCounter; $i++) {
             $name = $matches['tableName'][$i];
             $ifNotExists = $matches['ifNotExists'][$i];
-            $definition = $matches['tableDefinition'][$i];
-            $creationScript = $matches['creationScript'][$i];
+            $definition = $this->convertStringsFromBase64($matches['tableDefinition'][$i]);
+            $creationScript = $this->convertStringsFromBase64($matches['creationScript'][$i]);
             $engine = $matches['engine'][$i];
             $autoIncrement = $matches['autoIncrement'][$i];
             $defaultCharset = $matches['defaultCharset'][$i];
-            $comment = $matches['comment'][$i];
+            $comment = base64_decode($matches['comment'][$i]);
             $rowFormat = $matches['rowFormat'][$i];
             $keyBlockSize = $matches['keyBlockSize'][$i];
 
@@ -354,5 +354,39 @@ class Parser
         }
 
         return;
+    }
+
+    public function convertStringsToBase64($sqlScript)
+    {
+        $sqlScript = preg_replace_callback('/DEFAULT\s*\'(?<defaultValue>[^\']+)\'/', function ($matches) {
+            return sprintf('DEFAULT \'%s\'', base64_encode($matches['defaultValue']));
+        }, $sqlScript);
+
+        $sqlScript = preg_replace_callback('/COMMENT\s*\'(?<comment>[^\']+)\'/', function ($matches) {
+            return sprintf('COMMENT \'%s\'', base64_encode($matches['comment']));
+        }, $sqlScript);
+
+        $sqlScript = preg_replace_callback('/COMMENT\s*=\s*\'(?<comment>([^\']|\'\')+)\'/', function ($matches) {
+            return sprintf('COMMENT=\'%s\'', base64_encode($matches['comment']));
+        }, $sqlScript);
+
+        return $sqlScript;
+    }
+
+    public function convertStringsFromBase64($sqlScript)
+    {
+        $sqlScript = preg_replace_callback('/DEFAULT\s*\'(?<defaultValue>[^\']+)\'/', function ($matches) {
+            return sprintf('DEFAULT \'%s\'', base64_decode($matches['defaultValue']));
+        }, $sqlScript);
+
+        $sqlScript = preg_replace_callback('/COMMENT\s*\'(?<comment>[^\']+)\'/', function ($matches) {
+            return sprintf('COMMENT \'%s\'', base64_decode($matches['comment']));
+        }, $sqlScript);
+
+        $sqlScript = preg_replace_callback('/COMMENT\s*=\s*\'(?<comment>([^\']|\'\')+)\'/', function ($matches) {
+            return sprintf('COMMENT=\'%s\'', base64_decode($matches['comment']));
+        }, $sqlScript);
+
+        return $sqlScript;
     }
 }
