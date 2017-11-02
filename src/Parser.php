@@ -128,6 +128,7 @@ class Parser
             $decimalPrecision = $matches['decimalPrecision'][$i];
             $doublePrecision = $matches['doublePrecision'][$i];
             $floatPrecision = $matches['floatPrecision'][$i];
+            $fractionalSeconds = $matches['fractionalSeconds'][$i];
             $nullable = $matches['nullable'][$i];
             $autoIncrement = $matches['autoIncrement'][$i];
             $defaultValue = $matches['defaultValue'][$i];
@@ -145,7 +146,7 @@ class Parser
             $column->setDataType($dataType);
             $column->setUnsigned($unsigned);
 
-            $column->setLength($this->getColumnLength($intLength, $decimalLength, $doubleLength, $floatLength, $charLength, $binaryLength, $yearLength));
+            $column->setLength($this->getColumnLength($intLength, $decimalLength, $doubleLength, $floatLength, $charLength, $binaryLength, $yearLength, $fractionalSeconds));
             $column->setPrecision($this->getColumnPrecision($decimalPrecision, $doublePrecision, $floatPrecision));
             $column->setNullable($nullable !== 'NOT NULL');
             $column->setAutoIncrement(!empty($autoIncrement));
@@ -299,10 +300,11 @@ class Parser
      * @param int $charLength
      * @param int $binaryLength
      * @param int $yearLength
+     * @param int $fractionalSeconds
      *
      * @return int|null
      */
-    private function getColumnLength($intLength, $decimalLength, $doubleLength, $floatLength, $charLength, $binaryLength, $yearLength)
+    private function getColumnLength($intLength, $decimalLength, $doubleLength, $floatLength, $charLength, $binaryLength, $yearLength, $fractionalSeconds)
     {
         if (!empty($intLength)) {
             return (int) $intLength;
@@ -324,6 +326,9 @@ class Parser
         }
         if (!empty($yearLength)) {
             return (int) $yearLength;
+        }
+        if (!empty($fractionalSeconds)) {
+            return (int) $fractionalSeconds;
         }
 
         return;

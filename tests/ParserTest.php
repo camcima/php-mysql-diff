@@ -339,4 +339,24 @@ class ParserTest extends AbstractTest
         $this->assertEquals('InnoDB', $database->getTableByName('contact')->getEngine());
         $this->assertEquals('`id` BIGINT UNSIGNED NOT NULL AUTO_INCREMENT', $database->getTableByName('contact')->getColumnByName('id')->generateCreationScript());
     }
+
+    public function testIsParsingFractionalSeconds()
+    {
+        $creationScript = $this->getDatabaseFixture('fractional_seconds.sql');
+
+        $parser = new Parser();
+
+        $database = $parser->parseDatabase($creationScript);
+
+        $this->assertInstanceOf(Database::class, $database);
+        $this->assertCount(1, $database->getTables());
+        $this->assertCount(3, $database->getTableByName('fractional_seconds')->getColumns());
+        $this->assertCount(0, $database->getTableByName('fractional_seconds')->getPrimaryKeys());
+        $this->assertCount(0, $database->getTableByName('fractional_seconds')->getIndexes());
+        $this->assertNull($database->getTableByName('fractional_seconds')->getDefaultCharset());
+        $this->assertEquals('InnoDB', $database->getTableByName('fractional_seconds')->getEngine());
+        $this->assertEquals('`datetime_column` DATETIME(1) NOT NULL', $database->getTableByName('fractional_seconds')->getColumnByName('datetime_column')->generateCreationScript());
+        $this->assertEquals('`timestamp_column` TIMESTAMP(2) NOT NULL', $database->getTableByName('fractional_seconds')->getColumnByName('timestamp_column')->generateCreationScript());
+        $this->assertEquals('`time_column` TIME(3) NOT NULL', $database->getTableByName('fractional_seconds')->getColumnByName('time_column')->generateCreationScript());
+    }
 }
