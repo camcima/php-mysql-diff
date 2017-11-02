@@ -3,9 +3,7 @@
 namespace Camcima\MySqlDiff\Model;
 
 /**
- * Class DatabaseDiff
- *
- * @package Camcima\MySqlDiff\Model
+ * Class DatabaseDiff.
  */
 class DatabaseDiff
 {

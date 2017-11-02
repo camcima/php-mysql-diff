@@ -8,9 +8,7 @@ use Camcima\MySqlDiff\Model\Database;
 use Camcima\MySqlDiff\Model\DatabaseDiff;
 
 /**
- * Class Differ
- *
- * @package Camcima\MySqlDiff
+ * Class Differ.
  */
 class Differ
 {
@@ -26,7 +24,6 @@ class Differ
         $databaseDiff = new DatabaseDiff();
 
         foreach ($fromDatabase->getTables() as $fromTable) {
-
             if ($this->isTableIgnored($fromTable->getName(), $ignoreList)) {
                 continue;
             }
@@ -46,7 +43,6 @@ class Differ
         }
 
         foreach ($toDatabase->getTables() as $toTable) {
-
             if ($this->isTableIgnored($toTable->getName(), $ignoreList)) {
                 continue;
             }
@@ -230,7 +226,7 @@ class Differ
      */
     public function generateMigrationScriptArray(DatabaseDiff $databaseDiff, $displayProgress = false)
     {
-        $migrationScript = array();
+        $migrationScript = [];
         $migrationScript[] = '# Disable Foreign Keys Check';
         $migrationScript[] = 'SET FOREIGN_KEY_CHECKS = 0;';
         $migrationScript[] = 'SET SQL_MODE = \'\';';
@@ -241,7 +237,6 @@ class Differ
             $migrationScript[] = '';
             $migrationScript[] = sprintf('-- deleted table `%s`', $deletedTable->getName());
             $migrationScript[] = '';
-
 
             if ($displayProgress) {
                 $migrationScript[] = sprintf("SELECT 'Dropping table %s';", $deletedTable->getName());

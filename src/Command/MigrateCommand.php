@@ -10,9 +10,7 @@ use Symfony\Component\Console\Input\InputOption;
 use Symfony\Component\Console\Output\OutputInterface;
 
 /**
- * Class MigrateCommand
- *
- * @package Camcima\MySqlDiff\Command
+ * Class MigrateCommand.
  */
 class MigrateCommand extends AbstractCommand
 {
@@ -55,6 +53,7 @@ class MigrateCommand extends AbstractCommand
     /**
      * @param InputInterface $input
      * @param OutputInterface $output
+     *
      * @return int|null|void
      */
     protected function execute(InputInterface $input, OutputInterface $output)

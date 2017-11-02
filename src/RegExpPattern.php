@@ -2,11 +2,8 @@
 
 namespace Camcima\MySqlDiff;
 
-
 /**
- * Class RegExpPattern
- *
- * @package Camcima\MySqlDiff
+ * Class RegExpPattern.
  */
 class RegExpPattern
 {

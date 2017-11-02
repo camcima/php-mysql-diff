@@ -6,9 +6,7 @@ use Symfony\Component\Console\Command\Command;
 use Symfony\Component\Console\Output\OutputInterface;
 
 /**
- * Class AbstractCommand
- *
- * @package Camcima\MySqlDiff\Command
+ * Class AbstractCommand.
  */
 abstract class AbstractCommand extends Command
 {

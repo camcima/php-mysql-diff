@@ -3,9 +3,7 @@
 namespace Camcima\MySqlDiff\Model;
 
 /**
- * Class ChangedTable
- *
- * @package Camcima\MySqlDiff\Model
+ * Class ChangedTable.
  */
 class ChangedTable
 {
@@ -389,7 +387,7 @@ class ChangedTable
         }
 
         if ($this->fromTable->getComment() !== $this->toTable->getComment()) {
-            $tableChanges[] = sprintf('COMMENT=\'%s\'', str_replace('\'','\'\'', $this->toTable->getComment()));
+            $tableChanges[] = sprintf('COMMENT=\'%s\'', str_replace('\'', '\'\'', $this->toTable->getComment()));
         }
 
         $alterScript = sprintf('ALTER TABLE `%s`%s  %s;', $this->getName(), PHP_EOL, implode(',' . PHP_EOL . '  ', $tableChanges));

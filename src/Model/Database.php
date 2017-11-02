@@ -3,9 +3,7 @@
 namespace Camcima\MySqlDiff\Model;
 
 /**
- * Class Database
- *
- * @package Camcima\MySqlDiff\Model
+ * Class Database.
  */
 class Database
 {
@@ -32,8 +30,10 @@ class Database
 
     /**
      * @param string $tableName
-     * @return Table
+     *
      * @throws \RuntimeException
+     *
+     * @return Table
      */
     public function getTableByName($tableName)
     {

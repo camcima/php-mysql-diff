@@ -3,9 +3,7 @@
 namespace Camcima\MySqlDiff\Model;
 
 /**
- * Class Column
- *
- * @package Camcima\MySqlDiff\Model
+ * Class Column.
  */
 class Column
 {
@@ -442,7 +440,7 @@ class Column
         }
 
         if (!empty($this->comment)) {
-            $columnOptions[] = sprintf('COMMENT \'%s\'', str_replace('\'','\'\'', $this->comment));
+            $columnOptions[] = sprintf('COMMENT \'%s\'', str_replace('\'', '\'\'', $this->comment));
         }
 
         return trim(sprintf('`%s` %s %s', $this->name, $this->columnType, implode(' ', $columnOptions)));

@@ -10,9 +10,7 @@ use Camcima\MySqlDiff\Model\IndexColumn;
 use Camcima\MySqlDiff\Model\Table;
 
 /**
- * Class Parser
- *
- * @package Camcima\MySqlDiff
+ * Class Parser.
  */
 class Parser
 {
@@ -161,7 +159,7 @@ class Parser
             }
 
             if (!empty($comment)) {
-                $column->setComment(str_replace('\'\'','\'', $comment));
+                $column->setComment(str_replace('\'\'', '\'', $comment));
             }
 
             if (!empty($characterSet)) {
@@ -327,7 +325,8 @@ class Parser
         if (!empty($yearLength)) {
             return (int) $yearLength;
         }
-        return null;
+
+        return;
     }
 
     /**
@@ -348,6 +347,7 @@ class Parser
         if (!empty($floatPrecision)) {
             return (int) $floatPrecision;
         }
-        return null;
+
+        return;
     }
 }

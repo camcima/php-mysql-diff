@@ -3,9 +3,7 @@
 namespace Camcima\MySqlDiff\Model;
 
 /**
- * Class Table
- *
- * @package Camcima\MySqlDiff\Model
+ * Class Table.
  */
 class Table
 {
@@ -170,8 +168,10 @@ class Table
 
     /**
      * @param string $columnName
-     * @return Column
+     *
      * @throws \RuntimeException
+     *
+     * @return Column
      */
     public function getColumnByName($columnName)
     {
@@ -184,8 +184,10 @@ class Table
 
     /**
      * @param int $columnOrder
-     * @return Column
+     *
      * @throws \RuntimeException
+     *
+     * @return Column
      */
     public function getColumnByOrder($columnOrder)
     {
@@ -243,8 +245,10 @@ class Table
 
     /**
      * @param string $foreignKeyName
-     * @return ForeignKey
+     *
      * @throws \RuntimeException
+     *
+     * @return ForeignKey
      */
     public function getForeignKeyByName($foreignKeyName)
     {
@@ -284,8 +288,10 @@ class Table
 
     /**
      * @param string $indexName
-     * @return Index
+     *
      * @throws \RuntimeException
+     *
+     * @return Index
      */
     public function getIndexByName($indexName)
     {
@@ -492,7 +498,7 @@ class Table
         }
 
         if ($this->comment) {
-            $tableOptions[] = sprintf('COMMENT=\'%s\'', str_replace('\'','\'\'', $this->comment));
+            $tableOptions[] = sprintf('COMMENT=\'%s\'', str_replace('\'', '\'\'', $this->comment));
         }
 
         $implodedTableOptions = implode(' ', $tableOptions);

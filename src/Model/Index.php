@@ -3,9 +3,7 @@
 namespace Camcima\MySqlDiff\Model;
 
 /**
- * Class Index
- *
- * @package Camcima\MySqlDiff\Model
+ * Class Index.
  */
 class Index
 {
@@ -102,8 +100,10 @@ class Index
 
     /**
      * @param $columnName
-     * @return IndexColumn
+     *
      * @throws \RuntimeException
+     *
+     * @return IndexColumn
      */
     public function getIndexColumnByColumnName($columnName)
     {
