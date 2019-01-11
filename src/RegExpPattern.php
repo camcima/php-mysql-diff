@@ -27,6 +27,7 @@ class RegExpPattern
         '(?:tiny|medium|long)?blob',
         'enum\(.+\)',
         'set\(.+\)',
+        'json',
     ];
 
     /**
