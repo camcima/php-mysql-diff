@@ -72,6 +72,7 @@ class RegExpPattern
         $pattern .= '(?<nullable>NULL|NOT NULL)?\s*';
         $pattern .= '(?<autoIncrement>AUTO_INCREMENT)?\s*';
         $pattern .= '(?:DEFAULT (?<defaultValue>\S+|\'[^\']+\'))?\s*';
+        $pattern .= '(?:GENERATED ALWAYS AS \((?<virtual>.+)\) VIRTUAL)?\s*';
         $pattern .= '(?:ON UPDATE (?<onUpdateValue>\S+))?\s*';
         $pattern .= '(?:COMMENT \'(?<comment>([^\']|\'\')+)\')?\s*';
         $pattern .= '(?:,|$)/';

@@ -77,6 +77,8 @@ class Column
      */
     private $defaultValue;
 
+    private $virtual;
+
     /**
      * @var string
      */
@@ -108,6 +110,16 @@ class Column
     public function __construct($name)
     {
         $this->name = $name;
+    }
+
+    public function setVirtual($virtual)
+    {
+        $this->virtual = $virtual;
+    }
+
+    public function getVirtual($virtual)
+    {
+        return $this->virtual;
     }
 
     /**
@@ -433,6 +445,10 @@ class Column
 
         if (!empty($this->defaultValue)) {
             $columnOptions[] = sprintf('DEFAULT %s', $this->defaultValue);
+        }
+
+        if (!empty($this->virtual)) {
+            $columnOptions[] = sprintf('GENERATED ALWAYS AS (%s) VIRTUAL', $this->virtual);
         }
 
         if (!empty($this->onUpdateValue)) {

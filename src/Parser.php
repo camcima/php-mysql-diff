@@ -132,6 +132,7 @@ class Parser
             $nullable = $matches['nullable'][$i];
             $autoIncrement = $matches['autoIncrement'][$i];
             $defaultValue = $matches['defaultValue'][$i];
+            $virtual = $matches['virtual'][$i];
             $onUpdateValue = $matches['onUpdateValue'][$i];
             $comment = $matches['comment'][$i];
             $characterSet = $matches['characterSet'][$i];
@@ -150,6 +151,10 @@ class Parser
             $column->setPrecision($this->getColumnPrecision($decimalPrecision, $doublePrecision, $floatPrecision));
             $column->setNullable($nullable !== 'NOT NULL');
             $column->setAutoIncrement(!empty($autoIncrement));
+
+            if (!empty($virtual)) {
+                $column->setVirtual($virtual);
+            }
 
             if (!empty($defaultValue)) {
                 $column->setDefaultValue($defaultValue);
