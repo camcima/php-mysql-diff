@@ -1,7 +1,7 @@
 {
-  "name": "camcima/php-mysql-diff",
+  "name": "apetab/php-mysql-diff",
   "type": "project",
-  "homepage": "https://github.com/camcima/php-mysql-diff",
+  "homepage": "https://github.com/apetab/php-mysql-diff",
   "keywords": ["database","diff","mysql","migration","generator","script"],
   "license": "MIT",
   "authors": [
