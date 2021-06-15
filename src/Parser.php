@@ -131,6 +131,7 @@ class Parser
             $fractionalSeconds = $matches['fractionalSeconds'][$i];
             $nullable = $matches['nullable'][$i];
             $autoIncrement = $matches['autoIncrement'][$i];
+            $zerofill = $matches['zerofill'][$i];
             $defaultValue = $matches['defaultValue'][$i];
             $onUpdateValue = $matches['onUpdateValue'][$i];
             $comment = $matches['comment'][$i];
@@ -150,6 +151,7 @@ class Parser
             $column->setPrecision($this->getColumnPrecision($decimalPrecision, $doublePrecision, $floatPrecision));
             $column->setNullable($nullable !== 'NOT NULL');
             $column->setAutoIncrement(!empty($autoIncrement));
+            $column->setZerofill(!empty($zerofill));
 
             if (!empty($defaultValue)) {
                 $column->setDefaultValue($defaultValue);

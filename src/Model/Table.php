@@ -15,7 +15,7 @@ class Table
     /**
      * @var bool
      */
-    private $ifNotExists;
+    private $ifNotExists = true;
 
     /**
      * @var string

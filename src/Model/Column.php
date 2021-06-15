@@ -65,6 +65,11 @@ class Column
     /**
      * @var bool
      */
+    private $zerofill;
+
+    /**
+     * @var bool
+     */
     private $primaryKey;
 
     /**
@@ -281,6 +286,22 @@ class Column
     /**
      * @return bool
      */
+    public function isZerofill()
+    {
+        return $this->zerofill;
+    }
+
+    /**
+     * @param bool $zerofill
+     */
+    public function setZerofill($zerofill)
+    {
+        $this->zerofill = $zerofill;
+    }
+
+    /**
+     * @return bool
+     */
     public function isPrimaryKey()
     {
         return $this->primaryKey;
@@ -412,6 +433,10 @@ class Column
     public function generateCreationScript()
     {
         $columnOptions = [];
+
+        if ($this->isZerofill()) {
+            $columnOptions[] = 'zerofill';
+        }
 
         if ($this->characterSet) {
             $columnOptions[] = sprintf('CHARACTER SET %s', $this->characterSet);
