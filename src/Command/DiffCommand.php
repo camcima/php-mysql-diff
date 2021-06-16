@@ -131,7 +131,7 @@ class DiffCommand extends AbstractCommand
             if ($changedTable->isDeletedPrimaryKey()) {
                 $this->outputLine(sprintf('    <fg=red>▼</> primary key is in the FROM database but not in the TO database'));
             } elseif (!empty($changedTable->getChangedPrimaryKeys())) {
-                if (empty($changedTable->getFromTable()->getPrimaryKeys())) {
+                if (!$changedTable->getFromTable()->hasPrimaryKeys()) {
                     $this->outputLine(sprintf('    <info>▲</info> primary key is in the TO database but not in the FROM database'));
                 } else {
                     $this->outputLine(sprintf('    <comment>►</comment> primary key has a different definition'));

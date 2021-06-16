@@ -137,7 +137,7 @@ class Differ
         $fromTable = $changedTable->getFromTable();
         $toTable = $changedTable->getToTable();
 
-        if (empty($toTable->getPrimaryKeys()) && !empty($fromTable->getPrimaryKeys())) {
+        if (!$toTable->hasPrimaryKeys() && $fromTable->hasPrimaryKeys()) {
             $changedTable->setDeletedPrimaryKey(true);
 
             return;

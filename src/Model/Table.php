@@ -15,7 +15,7 @@ class Table
     /**
      * @var bool
      */
-    private $ifNotExists = true;
+    private $ifNotExists;
 
     /**
      * @var string
@@ -219,6 +219,14 @@ class Table
     }
 
     /**
+     * @return bool
+     */
+    public function hasPrimaryKeys()
+    {
+        return !empty($this->primaryKeys);
+    }
+
+    /**
      * @param Column $primaryKeyColumn
      */
     public function addPrimaryKey(Column $primaryKeyColumn)
@@ -413,12 +421,12 @@ class Table
      */
     public function generatePrimaryKeyCreationScript()
     {
-        if (empty($this->primaryKeys)) {
+        if (!$this->hasPrimaryKeys()) {
             return '';
         }
 
         $primaryKeys = [];
-        foreach ($this->primaryKeys as $primaryKeyColumn) {
+        foreach ($this->getPrimaryKeys() as $primaryKeyColumn) {
             if ($primaryKeyColumn->getPrimaryKeyLength()) {
                 $primaryKey = sprintf('`%s`(%s)', $primaryKeyColumn->getName(), $primaryKeyColumn->getPrimaryKeyLength());
             } else {
@@ -442,12 +450,12 @@ class Table
         $tableDefinitions = [];
 
         // Columns
-        foreach ($this->columns as $column) {
+        foreach ($this->getColumns() as $column) {
             $tableDefinitions[] = $column->generateCreationScript();
         }
 
         // Primary Keys
-        if (!empty($this->primaryKeys)) {
+        if ($this->hasPrimaryKeys()) {
             $tableDefinitions[] = $this->generatePrimaryKeyCreationScript();
         }
 
@@ -456,7 +464,7 @@ class Table
             ksort($this->indexes);
         }
 
-        foreach ($this->indexes as $index) {
+        foreach ($this->getIndexes() as $index) {
             $tableDefinitions[] = $index->generateCreationScript();
         }
 
@@ -465,40 +473,40 @@ class Table
             ksort($this->foreignKeys);
         }
 
-        foreach ($this->foreignKeys as $foreignKey) {
+        foreach ($this->getForeignKeys() as $foreignKey) {
             $tableDefinitions[] = $foreignKey->generateCreationScript();
         }
 
         $tableOptions = [];
 
-        if ($this->ifNotExists) {
+        if ($this->isIfNotExists()) {
             $ifNotExists = ' IF NOT EXISTS';
         } else {
             $ifNotExists = '';
         }
 
-        if ($this->engine) {
-            $tableOptions[] = sprintf('ENGINE=%s', $this->engine);
+        if ($this->getEngine()) {
+            $tableOptions[] = sprintf('ENGINE=%s', $this->getEngine());
         }
 
-        if ($this->autoIncrement && !$ignoreAutoIncrement) {
-            $tableOptions[] = sprintf('AUTO_INCREMENT=%s', $this->autoIncrement);
+        if ($this->getAutoIncrement() && !$ignoreAutoIncrement) {
+            $tableOptions[] = sprintf('AUTO_INCREMENT=%s', $this->getAutoIncrement());
         }
 
-        if ($this->defaultCharset) {
-            $tableOptions[] = sprintf('DEFAULT CHARSET=%s', $this->defaultCharset);
+        if ($this->getDefaultCharset()) {
+            $tableOptions[] = sprintf('DEFAULT CHARSET=%s', $this->getDefaultCharset());
         }
 
-        if ($this->rowFormat) {
-            $tableOptions[] = sprintf('ROW_FORMAT=%s', $this->rowFormat);
+        if ($this->getRowFormat()) {
+            $tableOptions[] = sprintf('ROW_FORMAT=%s', $this->getRowFormat());
         }
 
-        if ($this->keyBlockSize) {
-            $tableOptions[] = sprintf('KEY_BLOCK_SIZE=%s', $this->keyBlockSize);
+        if ($this->getKeyBlockSize()) {
+            $tableOptions[] = sprintf('KEY_BLOCK_SIZE=%s', $this->getKeyBlockSize());
         }
 
-        if ($this->comment) {
-            $tableOptions[] = sprintf('COMMENT=\'%s\'', str_replace('\'', '\'\'', $this->comment));
+        if ($this->getComment()) {
+            $tableOptions[] = sprintf('COMMENT=\'%s\'', str_replace('\'', '\'\'', $this->getComment()));
         }
 
         $implodedTableOptions = implode(' ', $tableOptions);

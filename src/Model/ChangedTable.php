@@ -306,7 +306,7 @@ class ChangedTable
         $tableDrops = [];
         $tableChanges = [];
 
-        if ($this->deletedPrimaryKey || (!empty($this->fromTable->getPrimaryKeys()) && !empty($this->changedPrimaryKeys))) {
+        if ($this->deletedPrimaryKey || ($this->fromTable->hasPrimaryKeys() && !empty($this->changedPrimaryKeys))) {
             $tableDrops[] = 'DROP PRIMARY KEY';
         }
 
