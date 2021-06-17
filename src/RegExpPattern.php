@@ -66,6 +66,7 @@ class RegExpPattern
         $pattern = '/\s*';
         $pattern .= '`(?<columnName>\S+?)`\s+';
         $pattern .= sprintf('(?<columnType>%s)\s*', implode('|', self::$columnTypeRegExps));
+        $pattern .= '(?<zerofill>ZEROFILL)?\s*';
         $pattern .= '(?:CHARACTER SET\s+(?<characterSet>\S+))?\s*';
         $pattern .= '(?:COLLATE\s+(?<collate>\S+))?\s*';
         $pattern .= '(?<nullable>NULL|NOT NULL)?\s*';

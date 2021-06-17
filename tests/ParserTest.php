@@ -49,6 +49,7 @@ class ParserTest extends AbstractTest
         $this->assertNull($actorTable->getColumnByName('actor_id')->getPrecision());
         $this->assertFalse($actorTable->getColumnByName('actor_id')->isNullable());
         $this->assertTrue($actorTable->getColumnByName('actor_id')->isAutoIncrement());
+        $this->assertFalse($actorTable->getColumnByName('actor_id')->isZerofill());
         $this->assertFalse($actorTable->getColumnByName('actor_id')->isPrimaryKey());
         $this->assertNull($actorTable->getColumnByName('actor_id')->getDefaultValue());
         $this->assertNull($actorTable->getColumnByName('actor_id')->getOnUpdateValue());
@@ -65,6 +66,7 @@ class ParserTest extends AbstractTest
         $this->assertNull($actorTable->getColumnByName('last_update')->getPrecision());
         $this->assertFalse($actorTable->getColumnByName('last_update')->isNullable());
         $this->assertFalse($actorTable->getColumnByName('last_update')->isAutoIncrement());
+        $this->assertFalse($actorTable->getColumnByName('last_update')->isZerofill());
         $this->assertFalse($actorTable->getColumnByName('last_update')->isPrimaryKey());
         $this->assertEquals('CURRENT_TIMESTAMP', $actorTable->getColumnByName('last_update')->getDefaultValue());
         $this->assertEquals('CURRENT_TIMESTAMP', $actorTable->getColumnByName('last_update')->getOnUpdateValue());
@@ -93,6 +95,7 @@ class ParserTest extends AbstractTest
         $this->assertNull($staffTable->getColumnByName('password')->getPrecision());
         $this->assertTrue($staffTable->getColumnByName('password')->isNullable());
         $this->assertFalse($staffTable->getColumnByName('password')->isAutoIncrement());
+        $this->assertFalse($staffTable->getColumnByName('password')->isZerofill());
         $this->assertFalse($staffTable->getColumnByName('password')->isPrimaryKey());
         $this->assertEquals('NULL', $staffTable->getColumnByName('password')->getDefaultValue());
         $this->assertNull($staffTable->getColumnByName('password')->getOnUpdateValue());
@@ -121,6 +124,7 @@ class ParserTest extends AbstractTest
         $this->assertNull($testTable->getColumnByName('test1')->getPrecision());
         $this->assertTrue($testTable->getColumnByName('test1')->isNullable());
         $this->assertFalse($testTable->getColumnByName('test1')->isAutoIncrement());
+        $this->assertFalse($testTable->getColumnByName('test1')->isZerofill());
         $this->assertFalse($testTable->getColumnByName('test1')->isPrimaryKey());
         $this->assertEquals('NULL', $testTable->getColumnByName('test1')->getDefaultValue());
         $this->assertNull($testTable->getColumnByName('test1')->getOnUpdateValue());
@@ -377,5 +381,22 @@ class ParserTest extends AbstractTest
         $this->assertEquals('InnoDB', $database->getTableByName('backslash')->getEngine());
         $this->assertEquals('Table/Comment', $database->getTableByName('backslash')->getComment());
         $this->assertEquals('`time_zone` varchar(255) NOT NULL DEFAULT \'America/Los_Angeles\' COMMENT \'Column/Comment\'', $database->getTableByName('backslash')->getColumnByName('time_zone')->generateCreationScript());
+    }
+
+    public function testIsParsingZerofillColumns()
+    {
+        $parser = new Parser();
+
+        $tables = $parser->parseTables($this->getDatabaseFixture('city.sql'));
+        $cityTable = $tables['city'];
+
+        $parser->parseColumns($cityTable);
+
+        $this->assertFalse($cityTable->getColumnByName('city_id')->isZerofill());
+        $this->assertTrue($cityTable->getColumnByName('zip')->isZerofill());
+        $this->assertFalse($cityTable->getColumnByName('lat')->isZerofill());
+        $this->assertFalse($cityTable->getColumnByName('lng')->isZerofill());
+        $this->assertFalse($cityTable->getColumnByName('city_name')->isZerofill());
+        $this->assertFalse($cityTable->getColumnByName('country_code')->isZerofill());
     }
 }

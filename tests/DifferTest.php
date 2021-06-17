@@ -72,6 +72,8 @@ class DifferTest extends AbstractTest
         $changedTable = $databaseDiff->getChangedTables()[0];
 
         $differ->diffChangedTable($changedTable);
+
+        $this->assertInstanceOf(\Camcima\MySqlDiff\Model\ChangedTable::class, $changedTable);
     }
 
     public function testIsDiffingChangedComment()
@@ -84,7 +86,10 @@ class DifferTest extends AbstractTest
         $differ = new Differ();
         $databaseDiff = $differ->diffDatabases($fromDatabase, $toDatabase);
 
-        $this->assertContains('CHANGE COLUMN `field1` `field1` varchar(50) NOT NULL COMMENT \'New Comment\' FIRST;', $differ->generateMigrationScript($databaseDiff));
+        $this->assertStringContainsString(
+            'CHANGE COLUMN `field1` `field1` varchar(50) NOT NULL COMMENT \'New Comment\' FIRST;',
+            $differ->generateMigrationScript($databaseDiff)
+        );
     }
 
     public function testIsGeneratingMigrationScript()
